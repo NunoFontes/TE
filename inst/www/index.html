@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <!-- Bootstrap core CSS -->
+    <link href="./dist/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="./dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <title>TRADING ECONOMICS | OpenCPU Demo</title>
+  </head>
+    
+  <body>
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="./dist/js/iframeResizer.contentWindow.min.js"></script>
+<script>
+  function build(){
+    jQuery(".thumbnail").each(function() {
+   $(this).attr("href",$(this).attr("href")+'?loc='+getUrlVars()['loc']);
+    //console.log(index)
+    })
+  }
+  function getUrlVars(){
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+jQuery(document).ready(function(){
+  if(getUrlVars()['loc']){
+    console.log("got it: "+getUrlVars()['loc'])
+    build();
+  }else{
+    console.log('nop')
+  //build();
+  }
+});    
+
+
+  </script>
+    <!--h1>TRADING ECONOMICS | OpenCPU</h1-->
+<div class="row">
+  <div class="col-xs-3">
+    <a href="chart.html" class="thumbnail">
+      <img src="plot.simple.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="multichart.html" class="thumbnail">
+      <img src="plot.multi.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="compareOne.html" class="thumbnail">
+      <img src="compare.scale.free.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="compareTwo.html" class="thumbnail">
+      <img src="plot.compare.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-3">
+    <a href="geomap.html" class="thumbnail">
+      <img src="geo.map.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="corrmat.html" class="thumbnail">
+      <img src="corr.map.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="heatmap.html" class="thumbnail">
+      <img src="heat.map.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3">
+    <a href="uncutcorrmat.html" class="thumbnail">
+      <img src="corr.map.uncut.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-3">
+    <a href="piechart.html" class="thumbnail">
+      <img src="pie.chart.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+   <div class="col-xs-3">
+    <a href="treemap.html" class="thumbnail">
+      <img src="Rplot.png" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+</div>
+<!--div class="row">
+  <div class="col-xs-3 col-md-3">
+  todo
+    <a href="#" class="thumbnail">
+      <img src="nop.jpg" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+  <div class="col-xs-3 col-md-3">
+  todo
+    <a href="#" class="thumbnail">
+      <img src="nop.jpg" style="min-height:100px;height:100px;min-width:130px;width:130px;">
+    </a>
+  </div>
+</div>
+    <div  id="test" class="page-header">
+      </div--> 
+  </body>
+</html>

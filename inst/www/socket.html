@@ -1,0 +1,13 @@
+<body> hello: <span class = "r"></span>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="./dist/js/socket.io.js"></script>
+<script>
+
+ var socket = io.connect('http://192.168.1.4:5555/');
+//socket.emit('my other event', { my: 'data' });
+  socket.on('EURUSD', function (data) {
+    $(".r").text(data)
+    //console.log(data);
+  });
+</script>
+</body>
