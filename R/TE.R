@@ -530,7 +530,7 @@ te.table=function(c,countries,indicators,d1="2005",what="NULL"){
 #te.table(c,"argentina","youth unemployment rate")
 te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  df=te.get.hist.multi.free(c,country,indicator,d1="1950")
+  df=te.get.hist.multi.free(c,country,indicator,d1="2005")
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -666,7 +666,7 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  df=te.get.hist.multi.free(c,country,indicator,d1="1950")
+  df=te.get.hist.multi.free(c,country,indicator,d1="2005")
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
