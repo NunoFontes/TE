@@ -53,11 +53,16 @@ comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confiden
 #as.data.frame(cbind(d,nr))
 #EUROPE=c("Albania","Andorra","Austria","Belarus","Belgium","Bosnia and Herzegovina","Bulgaria","Channel Islands","Croatia","Cyprus","Czech Republic","Denmark","Estonia","Euro area","Faeroe Islands","Finland","France","Germany","Greece","Hungary","Iceland","Ireland","Isle of Man","Italy","Kosovo","Latvia","Liechtenstein","Lithuania","Luxembourg","Macedonia","Malta","Moldova","Monaco","Montenegro","Netherlands","Norway","Poland","Portugal","Romania","Russia","San Marino","Serbia","Slovakia","Slovenia","Spain","Sweden","Switzerland","Turkey","Ukraine","United Kingdom")
 
+#install.packages("RCurl")
+#library(RCurl)
+#getURL(url="",httpheader= c(Accept = "text/html",MyField = "Duncan"))
+
+###
 set.auth=function(u="guest",p="guest"){
   c(u,p)
 }
 te.connect=function(c){
-  a = 'http://api.tradingeconomics.com/data.aspx';
+  a = 'http://54.83.43.149/data.aspx';
   paste(a,'?u=',c[1],'&p=',c[2],'&f=csv',sep='');
 }
 te.get.mat=function(c){
@@ -77,9 +82,9 @@ te.get.hist=function(c,country,indicator,d1="2005"){
 #reqArray = c("Country:indicator","country:indicator", ... )
 te.get.hist.multi=function(c,reqArray,d1="2005"){
   dataFrame=data.frame()
-  for(i in 1:length(reqArray)){
-  dataFrame=rbind(dataFrame,te.get.hist(c,strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
-}
+    for(i in 1:length(reqArray)){
+      dataFrame=rbind(dataFrame,te.get.hist(c,strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
+    }
   dataFrame
 }
 #contArray = c("Country","country", ... ) | indArray = c("indicator","indicator", ... )
@@ -88,13 +93,14 @@ te.get.hist.multi.free=function(c,contArray,indArray,d1="2005"){
   temp=data.frame()
   for(i in 1:length(contArray)){
     for(j in 1:length(indArray)){
-    temp=te.get.hist(c,contArray[i],indArray[j],d1)
-    if(is.null(temp)){next}
-    dataFrame=rbind(dataFrame,temp)
+      temp=te.get.hist(c,contArray[i],indArray[j],d1)
+      if(is.null(temp)){next}
+      dataFrame=rbind(dataFrame,temp)
     }
   }
   dataFrame
 }
+
 te.get.hist.multi.free.na=function(c,contArray,indArray,d1="2005"){
   options(stringsAsFactors = FALSE)
   dataFrame=data.frame()
