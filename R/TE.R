@@ -173,14 +173,22 @@ te.get.hist.multi.free=function(c,contArray,indArray,d1="2005"){
   dataFrame
 }
 te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
-country="rAppsOCPU"
-indicator="rAppsOCPU"
-for(i in 1:length(contArray)){
-  country=paste(country,contArray[i],sep=",")
-}
-for(i in 1:length(indArray)){
-  indicator=paste(indicator,indArray[i],sep=",")
-}
+  if(contArray[1]=="all"){
+    country="all"
+  }else{
+    country="rAppsOCPU"
+    for(i in 1:length(contArray)){
+      country=paste(country,contArray[i],sep=",")
+    }
+  }
+  if(indArray[1]=="all"){
+    indicator="all"
+  }else{
+    indicator="rAppsOCPU"
+    for(i in 1:length(indArray)){
+      indicator=paste(indicator,indArray[i],sep=",")
+    }
+  }
 url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
 df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
 if(is.null(df$DateTime)){return (NULL)}
@@ -561,6 +569,7 @@ te.heat.map=function(c,country,indicator,d1="NULL",opts=NULL){
   library(plyr)
   #df=te.get.hist.multi.free(c,country,indicator,"last")
   df=te.get.mat.new(country,indicator)
+  df <- df[c("Country","Category","DateTime","Value")]
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   df <- ddply(df, .(Category), transform, rescale = rescale(Value))
@@ -578,8 +587,10 @@ te.heat.map=function(c,country,indicator,d1="NULL",opts=NULL){
 }
 te.tree.map=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  
-  df=te.get.hist.multi.free(c,country,indicator,"last")
+
+  #df=te.get.hist.multi.free(c,country,indicator,"last")
+  df=te.get.mat.new(country,indicator)
+  df <- df[c("Country","Category","DateTime","Value")]
   
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -602,7 +613,10 @@ te.tree.map=function(c,country,indicator,d1="NULL",opts=NULL){
 #te.tree.map(c,countries,"GDP")
 te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  df=te.get.hist.multi.free(c,country,indicator,"last")
+  
+  #df=te.get.hist.multi.free(c,country,indicator,"last")
+  df=te.get.mat.new(country,indicator)
+  df <- df[c("Country","Category","DateTime","Value")]
   
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -634,7 +648,7 @@ te.table=function(c,countries,indicators,d1="2005",what="NULL"){
   if(what=="te.plot.compare.scale"|| what=="te.plot.compare" || what=="te.geomap" || what=="te.tree.map" || what=="te.heat.map"){d1="last"}
   if(what=="te.geomap"){countries=te.countries(c,"G200")}
   if(what=="te.correlation.matrix"){d1="1950"}
-  df=te.get.hist.multi.free(c,countries,indicators,d1)
+  df=te.get.hist.multi.free.new(c,countries,indicators,d1)
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   #df$DateTime <- as.character(as.yearmon(df$DateTime))
@@ -645,8 +659,10 @@ te.table=function(c,countries,indicators,d1="2005",what="NULL"){
 #te.table(c,"argentina","youth unemployment rate")
 te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  df=te.get.hist.multi.free(c,country,indicator,d1="2005")
+  
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
+  df=te.get.hist.multi.free.new(country,indicator,d1="2007-12-01")
+  
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
@@ -781,8 +797,8 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  df=te.get.hist.multi.free(c,country,indicator,d1="2005")
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
+  df=te.get.hist.multi.free.new(country,indicator,d1="2007-12-01")
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
