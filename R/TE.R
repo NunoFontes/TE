@@ -70,24 +70,90 @@ comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confiden
 set.auth=function(u="guest",p="guest"){
   c(u,p)
 }
-RCURLgetURL=function(url,key=NULL,secret=NULL){
-  if(is.null(key)) key="9541a8a3c3ccb5b"
-  if(is.null(secret)) secret="3ce8e344216b372"
-  RCURLhttpheader= c(Authorization = paste("Client ",key,":",secret,sep=""))
+RCURLgetURL=function(url,k=NULL,s=NULL){
+  if(is.null(k)) k="9541a8a3c3ccb5b"
+  if(is.null(s)) s="3ce8e344216b372"
+  RCURLhttpheader= c(Authorization = paste("Client ",k,":",s,sep=""))
   RCURLopts = list(ssl.verifypeer = FALSE)
   getURL(url,httpheader=RCURLhttpheader,.opts=RCURLopts)
 }
+##### OLD API CALLS
+if(F){
 te.connect=function(c){
   a = 'http://54.83.43.149/data.aspx';
   paste(a,'?u=',c[1],'&p=',c[2],'&f=csv',sep='');
 }
-te.connect.new=function(){
-  a = 'https://teapi.azurewebsites.net/api';
-  a
-}
 te.get.mat=function(c){
   url = paste(te.connect(c), '&q=matrix', sep=''); #print(url);
   read.csv(url)
+}
+te.get.hist=function(c,country,indicator,d1="2005"){
+  head=FALSE
+  if(tolower(d1)=="last"){d1="2009";head=TRUE}
+  url = paste(te.connect(c), "&","d1=",d1,"&q=historical&c=",URLencode(country),"&i=",URLencode(indicator),sep=""); #print(url);
+  df = read.csv(url)
+  if(is.null(df$DateTime)){return (NULL)}
+  df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
+  if(head){df=df[order(df$DateTime,decreasing=TRUE),][1,]}
+  df
+}
+te.get.hist.multi=function(c,reqArray,d1="2005"){
+  dataFrame=data.frame()
+  for(i in 1:length(reqArray)){
+    dataFrame=rbind(dataFrame,te.get.hist(c,strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
+  }
+  dataFrame
+}
+te.get.hist.multi.free=function(c,contArray,indArray,d1="2005"){
+  dataFrame=data.frame()
+  temp=data.frame()
+  for(i in 1:length(contArray)){
+    for(j in 1:length(indArray)){
+      temp=te.get.hist(c,contArray[i],indArray[j],d1)
+      if(is.null(temp)){next}
+      dataFrame=rbind(dataFrame,temp)
+    }
+  }
+  dataFrame
+}
+te.get.hist.multi.free.na=function(c,contArray,indArray,d1="2005"){
+  options(stringsAsFactors = FALSE)
+  dataFrame=data.frame()
+  temp=data.frame()
+  for(i in 1:length(contArray)){
+    for(j in 1:length(indArray)){
+      temp=te.get.hist(c,contArray[i],indArray[j],d1)
+      if(is.null(temp)){temp = as.data.frame(t(c(contArray[i],indArray[j],NA,NA)));names(temp)=c("Country","Category","DateTime","Value")}
+      dataFrame=rbind(dataFrame,temp)
+    }
+  }
+  dataFrame
+}
+historicalToMatrix = function(c,countries,indicators){
+  options(stringsAsFactors = FALSE)
+  newdf=data.frame()
+  df=data.frame()
+  myTempDF=data.frame()
+  df=te.get.hist.multi.free(c,countries,indicators,"last")
+  for(i in 1:length(countries))
+  {
+    #print(i)
+    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
+    if(length(myTempDF)<length(indicators)+1){next}
+    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
+    newdf=rbind(newdf,myTempDF['Value',])
+  }
+  #return(list(message=paste(names(newdf),collapse=" # ")))
+  
+  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
+  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
+  newdf
+}
+}
+
+te.connect.new=function(){
+  a = 'https://teapi.azurewebsites.net/api';
+  a
 }
 te.get.mat.new=function(contArray,indArray){
   if(contArray[1]=="all"){
@@ -127,16 +193,6 @@ te.get.mat.mat.new=function(contArray){
   if(is.null(df$Country)){return (NULL)}
   df
 }
-te.get.hist=function(c,country,indicator,d1="2005"){
-  head=FALSE
-  if(tolower(d1)=="last"){d1="2009";head=TRUE}
-  url = paste(te.connect(c), "&","d1=",d1,"&q=historical&c=",URLencode(country),"&i=",URLencode(indicator),sep=""); #print(url);
-  df = read.csv(url)
-  if(is.null(df$DateTime)){return (NULL)}
-  df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
-  if(head){df=df[order(df$DateTime,decreasing=TRUE),][1,]}
-  df
-}
 te.get.hist.new=function(country,indicator,d1="2005-01-01"){
   url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
   df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
@@ -145,13 +201,6 @@ te.get.hist.new=function(country,indicator,d1="2005-01-01"){
   df
 }
 #reqArray = c("Country:indicator","country:indicator", ... )
-te.get.hist.multi=function(c,reqArray,d1="2005"){
-  dataFrame=data.frame()
-    for(i in 1:length(reqArray)){
-      dataFrame=rbind(dataFrame,te.get.hist(c,strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
-    }
-  dataFrame
-}
 te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
   dataFrame=data.frame()
   for(i in 1:length(reqArray)){
@@ -160,18 +209,6 @@ te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
   dataFrame
 }
 #contArray = c("Country","country", ... ) | indArray = c("indicator","indicator", ... )
-te.get.hist.multi.free=function(c,contArray,indArray,d1="2005"){
-  dataFrame=data.frame()
-  temp=data.frame()
-  for(i in 1:length(contArray)){
-    for(j in 1:length(indArray)){
-      temp=te.get.hist(c,contArray[i],indArray[j],d1)
-      if(is.null(temp)){next}
-      dataFrame=rbind(dataFrame,temp)
-    }
-  }
-  dataFrame
-}
 te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
   if(contArray[1]=="all"){
     country="all"
@@ -194,39 +231,6 @@ df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
 if(is.null(df$DateTime)){return (NULL)}
 df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
 df
-}
-te.get.hist.multi.free.na=function(c,contArray,indArray,d1="2005"){
-  options(stringsAsFactors = FALSE)
-  dataFrame=data.frame()
-  temp=data.frame()
-  for(i in 1:length(contArray)){
-    for(j in 1:length(indArray)){
-      temp=te.get.hist(c,contArray[i],indArray[j],d1)
-      if(is.null(temp)){temp = as.data.frame(t(c(contArray[i],indArray[j],NA,NA)));names(temp)=c("Country","Category","DateTime","Value")}
-      dataFrame=rbind(dataFrame,temp)
-    }
-  }
-  dataFrame
-}
-historicalToMatrix = function(c,countries,indicators){
-  options(stringsAsFactors = FALSE)
-  newdf=data.frame()
-  df=data.frame()
-  myTempDF=data.frame()
-  df=te.get.hist.multi.free(c,countries,indicators,"last")
-  for(i in 1:length(countries))
-  {
-    #print(i)
-    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
-    if(length(myTempDF)<length(indicators)+1){next}
-    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
-    newdf=rbind(newdf,myTempDF['Value',])
-  }
-  #return(list(message=paste(names(newdf),collapse=" # ")))
-  
-  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
-  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
-  newdf
 }
 historicalToMatrix.new = function(c,countries,indicators){
   options(stringsAsFactors = FALSE)
