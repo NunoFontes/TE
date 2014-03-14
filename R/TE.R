@@ -850,7 +850,6 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
 #  newdf
 #}
-
 if(F){
   #BUBBLE PLOT
   df=data.frame()
