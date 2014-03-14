@@ -67,9 +67,6 @@ comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confiden
 #getURL(url="https://teapi.azurewebsites.net/api/country",httpheader=RCURLhttpheader,.opts=RCURLopts)
 
 ###
-set.auth=function(u="guest",p="guest"){
-  c(u,p)
-}
 RCURLgetURL=function(url,k=NULL,s=NULL){
   if(is.null(k)) k="9541a8a3c3ccb5b"
   if(is.null(s)) s="3ce8e344216b372"
@@ -79,6 +76,9 @@ RCURLgetURL=function(url,k=NULL,s=NULL){
 }
 ##### OLD API CALLS
 if(F){
+set.auth=function(u="guest",p="guest"){
+    c(u,p)
+ }
 te.connect=function(c){
   a = 'http://54.83.43.149/data.aspx';
   paste(a,'?u=',c[1],'&p=',c[2],'&f=csv',sep='');
@@ -150,7 +150,7 @@ historicalToMatrix = function(c,countries,indicators){
   newdf
 }
 }
-
+################
 te.connect.new=function(){
   a = 'https://teapi.azurewebsites.net/api';
   a
