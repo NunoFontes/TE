@@ -39,6 +39,7 @@ if (!require(RCurl)){
 #library(plyr)
 require(scales)
 library(ellipse)
+library(RColorBrewer)
 #library(treemap)
 }
 library(countrycode)
@@ -500,26 +501,6 @@ c("GDP Annual Growth Rate",
 "Retail Sales YoY",
 "Exports")
 }
-#historical.matrix = function(c,countries,indicators,d1="2005"){
-  options(stringsAsFactors = FALSE)
-  newdf=data.frame()
-  df=data.frame()
-  myTempDF=data.frame()
-  df=te.get.hist.multi.free(c,countries,indicators,d1)
-  for(i in 1:length(countries))
-  {
-    #print(i)
-    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
-    if(length(myTempDF)<length(indicators)+1){next}
-    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
-    newdf=rbind(newdf,myTempDF['Value',])
-  }
-  #return(list(message=paste(names(newdf),collapse=" # ")))
-  
-  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
-  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
-  newdf
-}
 trim=function (x) gsub("^\\s+|\\s+$", "", x)
 Split=function(x) {sapply(strsplit(x," "), paste, collapse=".")}
 te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
@@ -563,7 +544,6 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
                  mapRegion=opts,
                  numCats=30)
   
-  
   #ggplot(d, aes(map_id = region)) + 
   #  geom_map(aes(fill = Value),colour="grey10", map = all) + 
   #  expand_limits(x = all$long, y = all$lat) +
@@ -579,7 +559,8 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
 te.heat.map=function(c,country,indicator,d1="NULL",opts=NULL){
   library(scales)
   library(plyr)
-  df=te.get.hist.multi.free(c,country,indicator,"last")
+  #df=te.get.hist.multi.free(c,country,indicator,"last")
+  df=te.get.mat.new(country,indicator)
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   df <- ddply(df, .(Category), transform, rescale = rescale(Value))
@@ -594,7 +575,6 @@ te.heat.map=function(c,country,indicator,d1="NULL",opts=NULL){
           axis.text.x = element_text(size = 15, angle = 310, hjust = 0, colour = "black"),
           axis.text.y = element_text(size = 12, colour = "#000052"))
   #+ ggtitle("Countries ~ Indicators")
-  
 }
 te.tree.map=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
@@ -829,6 +809,27 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
         lower.panel=panel.smooth, upper.panel=panel.cor,gap=0.1,
         cex=.1,cex.labels=1.2,main="")
 }
+
+#historical.matrix = function(c,countries,indicators,d1="2005"){
+#  options(stringsAsFactors = FALSE)
+#  newdf=data.frame()
+#  df=data.frame()
+#  myTempDF=data.frame()
+#  df=te.get.hist.multi.free(c,countries,indicators,d1)
+#  for(i in 1:length(countries))
+#  {
+#    #print(i)
+#    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
+#    if(length(myTempDF)<length(indicators)+1){next}
+#    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
+#    newdf=rbind(newdf,myTempDF['Value',])
+#  }
+#  #return(list(message=paste(names(newdf),collapse=" # ")))
+#  
+#  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
+#  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
+#  newdf
+#}
 
 if(F){
   #BUBBLE PLOT
