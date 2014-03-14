@@ -88,6 +88,44 @@ te.get.mat=function(c){
   url = paste(te.connect(c), '&q=matrix', sep=''); #print(url);
   read.csv(url)
 }
+te.get.mat.new=function(contArray,indArray){
+  if(contArray[1]=="all"){
+    country="all"
+  }else{
+    country="rAppsOCPU"
+    for(i in 1:length(contArray)){
+      country=paste(country,contArray[i],sep=",")
+    }
+  }
+  if(indArray[1]=="all"){
+    indicator="all"
+  }else{
+  indicator="rAppsOCPU"
+    for(i in 1:length(indArray)){
+      indicator=paste(indicator,indArray[i],sep=",")
+    }
+  }
+  url = paste(te.connect.new(), "/country/",URLencode(country),"/",URLencode(indicator),"?f=csv",sep=""); #print(url);
+  df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
+  if(is.null(df$Country)){return (NULL)}
+  names(df) <- c("Country","Category","Title","DateTime","Value","Source","Unit","URL","CategoryGroup")
+  df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
+  df
+}
+te.get.mat.mat.new=function(contArray){
+  if(contArray[1]=="all"){
+    country=""
+  }else{
+    country="rAppsOCPU"
+    for(i in 1:length(contArray)){
+      country=paste(country,contArray[i],sep=",")
+    }
+  }
+  url = paste(te.connect.new(), "/matrix/",URLencode(country),"?f=csv",sep=""); #print(url);
+  df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
+  if(is.null(df$Country)){return (NULL)}
+  df
+}
 te.get.hist=function(c,country,indicator,d1="2005"){
   head=FALSE
   if(tolower(d1)=="last"){d1="2009";head=TRUE}
@@ -99,13 +137,10 @@ te.get.hist=function(c,country,indicator,d1="2005"){
   df
 }
 te.get.hist.new=function(country,indicator,d1="2005-01-01"){
-  head=FALSE
-  if(tolower(d1)=="last"){d1="2009-01-01";head=TRUE}
   url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
   df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
   if(is.null(df$DateTime)){return (NULL)}
   df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
-  if(head){df=df[order(df$DateTime,decreasing=TRUE),][1,]}
   df
 }
 #reqArray = c("Country:indicator","country:indicator", ... )
@@ -116,10 +151,10 @@ te.get.hist.multi=function(c,reqArray,d1="2005"){
     }
   dataFrame
 }
-te.get.hist.multi.new=function(c,reqArray,d1="2005-01-01"){
+te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
   dataFrame=data.frame()
   for(i in 1:length(reqArray)){
-    dataFrame=rbind(dataFrame,te.get.hist(c,strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
+    dataFrame=rbind(dataFrame,te.get.hist.new(strsplit(reqArray[i],":")[[1]][1],strsplit(reqArray[i],":")[[1]][2],d1))
   }
   dataFrame
 }
@@ -136,13 +171,14 @@ te.get.hist.multi.free=function(c,contArray,indArray,d1="2005"){
   }
   dataFrame
 }
-
-te.get.hist.multi.free.new=function(c,contArray,indArray,d1="2005"){
+te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
 country="rAppsOCPU"
 indicator="rAppsOCPU"
-for(i in 1:length(reqArray)){
-  country=paste(country,strsplit(reqArray[i],":")[[1]][1],sep=",")
-  indicator=paste(indicator,strsplit(reqArray[i],":")[[1]][2],sep=",")
+for(i in 1:length(contArray)){
+  country=paste(country,contArray[i],sep=",")
+}
+for(i in 1:length(indArray)){
+  indicator=paste(indicator,indArray[i],sep=",")
 }
 url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
 df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
@@ -163,11 +199,53 @@ te.get.hist.multi.free.na=function(c,contArray,indArray,d1="2005"){
   }
   dataFrame
 }
+historicalToMatrix = function(c,countries,indicators){
+  options(stringsAsFactors = FALSE)
+  newdf=data.frame()
+  df=data.frame()
+  myTempDF=data.frame()
+  df=te.get.hist.multi.free(c,countries,indicators,"last")
+  for(i in 1:length(countries))
+  {
+    #print(i)
+    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
+    if(length(myTempDF)<length(indicators)+1){next}
+    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
+    newdf=rbind(newdf,myTempDF['Value',])
+  }
+  #return(list(message=paste(names(newdf),collapse=" # ")))
+  
+  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
+  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
+  newdf
+}
+historicalToMatrix.new = function(c,countries,indicators){
+  options(stringsAsFactors = FALSE)
+  newdf=data.frame()
+  df=data.frame()
+  myTempDF=data.frame()
+  df=te.get.mat.new(countries,indicators)
+  for(i in 1:length(countries))
+  {
+    #print(i)
+    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
+    if(length(myTempDF)<length(indicators)+1){next}
+    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
+    newdf=rbind(newdf,myTempDF['Value',])
+  }
+  #return(list(message=paste(names(newdf),collapse=" # ")))
+  
+  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
+  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
+  newdf
+}
 te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
   #dataFrame=te.get.hist(c,country,indicator,d1)
   dataFrame=te.get.hist.new(country,indicator,d1)
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  
   labelsbreak=paste(round(as.numeric(dataFrame$DateTime[length(dataFrame$DateTime)]-dataFrame$DateTime[1], units = "days")/300),"month")
   
   #while(round((max(dataFrame$Value)-min(dataFrame$Value))/10,1)==0)
@@ -200,34 +278,42 @@ if(is.null(indicator))
 {
   titl="Multiple Plot"
   axis=element_blank()
-  dataFrame=te.get.hist.multi(c,country,d1)
+  #dataFrame=te.get.hist.multi(c,country,d1)
+  dataFrame=te.get.hist.multi.new(country,d1)
   
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
   for(ca in unique(dataFrame$Indicator))
-    dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    dataFrame[dataFrame$Indicator==ca,]$Close=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Close))
 }else if(length(country)==1){
   titl=paste(country)
   axis=element_blank()
-  dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  #dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
   dataFrame$Indicator <- sapply(dataFrame, function(x) dataFrame$Category)[,1] 
   for(ca in unique(dataFrame$Indicator))
-    dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    dataFrame[dataFrame$Indicator==ca,]$Close=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Close))
 }else if(length(indicator)==1){
   titl=paste(indicator)
   axis=element_text()
-  dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  #dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
       
  if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
  if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+ if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
       
  #dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
  #dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
@@ -237,12 +323,14 @@ if(is.null(indicator))
  if(indicator %in% comparisonproblems){
    axis=element_blank()
  for(ca in unique(dataFrame$Indicator))
-     dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+     #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+     dataFrame[dataFrame$Indicator==ca,]$Close=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Close))
  }
 }else{
   titl=paste("Cross-Indicators Analysis")
   axis=element_blank()
-  dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  #dataFrame=te.get.hist.multi.free(c,country,indicator,d1)
+  dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
@@ -251,11 +339,13 @@ if(is.null(indicator))
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
   
   for(ca in unique(dataFrame$Indicator))
-    dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
+    dataFrame[dataFrame$Indicator==ca,]$Close=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Close))
 }
 
   labelsbreak=paste(round(as.numeric(max(dataFrame$DateTime)-min(dataFrame$DateTime), units = "days")/300),"month")
-  ggplot(dataFrame,aes(x=DateTime, y=Value, colour=Indicator)) + 
+  #ggplot(dataFrame,aes(x=DateTime, y=Value, colour=Indicator)) +
+  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
     geom_line() + 
     #geom_point(size = 3) +
     #scale_colour_manual(values = c("7.4" = "red","#4863A0")) +
@@ -275,7 +365,8 @@ if(is.null(indicator))
 }
 te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
   if(length(country)>70){stop("Too many indicators to show. Please re-do selection.")}
-  d=te.get.hist.multi.free(c,country,indicator,"last")
+  #d=te.get.hist.multi.free(c,country,indicator,"last")
+  d=te.get.mat.new(country,indicator)
   if(is.null(d)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(d)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   titl = paste(indicator)
@@ -296,8 +387,12 @@ te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
   #+ ggtitle(titl)
 }
 te.plot.compare=function(c,country,indicator,d1="NULL",opts=NULL){
+  #df=data.frame()
+  #assign("df",historicalToMatrix(c,country,indicator), envir = environment())
+  
   df=data.frame()
-  assign("df",historicalToMatrix(c,country,indicator), envir = environment())
+  assign("df",historicalToMatrix.new(c,country,indicator), envir = environment())
+  
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
@@ -320,7 +415,7 @@ te.plot.compare=function(c,country,indicator,d1="NULL",opts=NULL){
 }
 ## ACCEPTS: G99 | Continent | EMERGING99 | PLUNGING99 ##
 te.countries = function(c,group="G20"){
-  m = te.get.mat(c)
+  m = te.get.mat.mat.new("all")
   if(substr(tolower(group),1,1)=="g" && !is.na(as.numeric(substr(tolower(group),2,nchar(group)))))
   {
     return (trim(head(m[order(m$GDP, decreasing = TRUE),],n=as.numeric(substr(tolower(group),2,nchar(group))))$Country))
@@ -377,7 +472,7 @@ te.countries = function(c,group="G20"){
     {
       n=as.numeric(substr(group,9,nchar(group)))
     }
-    return (trim(head(m[order(m$GDP.Growth.YoY, decreasing = TRUE),],n)$Country))
+    return (trim(head(m[order(m$GDP_Growth_YoY, decreasing = TRUE),],n)$Country))
   }
   if(substr(tolower(group),1,8)=="plunging")
   {
@@ -386,7 +481,8 @@ te.countries = function(c,group="G20"){
     {
       n=as.numeric(substr(group,9,nchar(group)))
     }
-    return (trim(head(m[order(m$GDP.Growth.YoY, decreasing = FALSE),],n)$Country))  }
+    return (trim(head(m[order(m$GDP_Growth_YoY, decreasing = FALSE),],n)$Country))
+  }
 }
 te.indicators = function(c,group="labour"){
   #m = te.get.mat(c)
@@ -404,27 +500,7 @@ c("GDP Annual Growth Rate",
 "Retail Sales YoY",
 "Exports")
 }
-historicalToMatrix = function(c,countries,indicators){
-  options(stringsAsFactors = FALSE)
-  newdf=data.frame()
-  df=data.frame()
-  myTempDF=data.frame()
-  df=te.get.hist.multi.free(c,countries,indicators,"last")
-  for(i in 1:length(countries))
-  {
-    #print(i)
-    myTempDF=cbind(data.frame(t(df[tolower(df$Country)==tolower(countries[i]),c('Category','Value')])),countries[i])
-    if(length(myTempDF)<length(indicators)+1){next}
-    names(myTempDF)=c(myTempDF['Category',1:length(indicators)],'Country')
-    newdf=rbind(newdf,myTempDF['Value',])
-  }
-  #return(list(message=paste(names(newdf),collapse=" # ")))
-  
-  newdf[,1:length(indicators)]<-lapply(newdf[,1:length(indicators)],as.numeric)
-  #return(list(message=paste(paste(df,collapse=" J "),paste(newdf,collapse=" H "),collapse=" ! ")))
-  newdf
-}
-historical.matrix = function(c,countries,indicators,d1="2005"){
+#historical.matrix = function(c,countries,indicators,d1="2005"){
   options(stringsAsFactors = FALSE)
   newdf=data.frame()
   df=data.frame()
@@ -459,7 +535,9 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
   }else{
     ct=te.countries(c,"G200")
   }
-  d=te.get.hist.multi.free.na(c,ct,indicator,"last")
+  #d=te.get.hist.multi.free.na(c,ct,indicator,"last")
+  d=te.get.mat.new("all",indicator)
+  d=d[d$Country %in% ct,]
   
   d$region[!is.na(countrycode(d$Country,"country.name","iso3c"))] <- countrycode(d$Country,"country.name","iso3c")[!is.na(countrycode(d$Country,"country.name","iso3c"))]
   d[is.na(countrycode(d$Country,"country.name","iso3c")),]$region <- substr(d[is.na(countrycode(d$Country,"country.name","iso3c")),]$Country,1,3)
