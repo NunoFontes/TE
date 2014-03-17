@@ -71,7 +71,7 @@ RCURLgetURL=function(url,k=NULL,s=NULL){
   if(is.null(k)) k="9541a8a3c3ccb5b"
   if(is.null(s)) s="3ce8e344216b372"
   RCURLhttpheader= c(Authorization = paste("Client ",k,":",s,sep=""))
-  RCURLopts = list(ssl.verifypeer = FALSE,timeout = 100)
+  RCURLopts = list(ssl.verifypeer = FALSE,timeout = 10000)
   getURL(url,httpheader=RCURLhttpheader,.opts=RCURLopts)
 }
 ##### OLD API CALLS
