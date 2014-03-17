@@ -173,11 +173,47 @@ te.get.mat.new=function(contArray,indArray){
     }
   }
   url = paste(te.connect.new(), "/country/",URLencode(country),"/",URLencode(indicator),"?f=csv",sep=""); #print(url);
+  #print(nchar(url))
+  if(nchar(url)>310){
+    if(contArray[1]=="all"){
+      country1="all"
+      country2="all"
+    }else{
+      country1="rAppsOCPU"
+      country2="rAppsOCPU"
+      for(i in 1:round(length(contArray)/2)){
+        country1=paste(country1,contArray[i],sep=",")
+      }
+      for(i in (round(length(contArray)/2)+1):length(contArray)){
+        country2=paste(country2,contArray[i],sep=",")
+      }
+    }
+    if(indArray[1]=="all"){
+      indicator1="all"
+      indicator2="all"
+    }else{
+      indicator1="rAppsOCPU"
+      indicator2="rAppsOCPU"
+      for(i in 1:round(length(indArray)/2)){
+        indicator1=paste(indicator1,indArray[i],sep=",")
+      }
+      for(i in (round(length(indArray)/2)+1):length(indArray)){
+        indicator2=paste(indicator2,indArray[i],sep=",")
+      }
+    }
+    df1=te.get.mat.new(country1,indicator1)
+    df2=te.get.mat.new(country2,indicator2)
+    df3=te.get.mat.new(country1,indicator2)
+    df4=te.get.mat.new(country2,indicator1)
+    df = rbind(df1,df2,df3,df4)
+    df
+  }else{
   df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
   if(is.null(df$Country)){return (NULL)}
   names(df) <- c("Country","Category","Title","DateTime","Value","Source","Unit","URL","CategoryGroup")
   df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
   df
+  }
 }
 te.get.mat.mat.new=function(contArray){
   if(contArray[1]=="all"){
