@@ -173,7 +173,7 @@ te.get.mat.new=function(contArray,indArray){
       indicator=paste(indicator,indArray[i],sep=",")
     }
   }
-  url = paste(te.connect.new(), "/country/",URLencode(country),"/",URLencode(indicator),"?f=csv",sep=""); #print(url);
+  url = paste(te.connect.new(), "country/",URLencode(country),"/",URLencode(indicator),"?f=csv",sep=""); #print(url);
   #print(nchar(url))
   if(nchar(url)>310){
     if(contArray[1]=="all"){
