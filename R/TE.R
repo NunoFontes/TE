@@ -64,7 +64,7 @@ comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confiden
 
 #RCURLhttpheader= c(Authorization = "Client 9541a8a3c3ccb5b:3ce8e344216b372")
 #RCURLopts = list(ssl.verifypeer = FALSE)
-#getURL(url="https://teapi.azurewebsites.net/api/country",httpheader=RCURLhttpheader,.opts=RCURLopts)
+#getURL(url="http://api2.tradingeconomics.com/api/country",httpheader=RCURLhttpheader,.opts=RCURLopts)
 
 ###
 RCURLgetURL=function(url,k=NULL,s=NULL){
@@ -153,7 +153,7 @@ historicalToMatrix = function(c,countries,indicators){
 ################
 te.connect.new=function(){
   #a = 'https://teapi.azurewebsites.net/api';
-  a = 'http://api2.tradingeconomics.com/';
+  a = 'http://api2.tradingeconomics.com/api';
   a
 }
 te.get.mat.new=function(contArray,indArray){
