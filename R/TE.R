@@ -152,7 +152,8 @@ historicalToMatrix = function(c,countries,indicators){
 }
 ################
 te.connect.new=function(){
-  a = 'https://teapi.azurewebsites.net/api';
+  #a = 'https://teapi.azurewebsites.net/api';
+  a = 'http://api2.tradingeconomics.com/';
   a
 }
 te.get.mat.new=function(contArray,indArray){
@@ -178,6 +179,9 @@ te.get.mat.new=function(contArray,indArray){
     if(contArray[1]=="all"){
       country1="all"
       country2="all"
+    }else if(length(contArray)==1){
+      country1=contArray[1]
+      country2=contArray[1]
     }else{
       country1="rAppsOCPU"
       country2="rAppsOCPU"
@@ -191,6 +195,9 @@ te.get.mat.new=function(contArray,indArray){
     if(indArray[1]=="all"){
       indicator1="all"
       indicator2="all"
+    }else if(length(contArray)==1){
+      indicator1=indArray[1]
+      indicator2=indArray[1]
     }else{
       indicator1="rAppsOCPU"
       indicator2="rAppsOCPU"
@@ -201,10 +208,10 @@ te.get.mat.new=function(contArray,indArray){
         indicator2=paste(indicator2,indArray[i],sep=",")
       }
     }
-    df1=te.get.mat.new(country1,indicator1)
-    df2=te.get.mat.new(country2,indicator2)
-    df3=te.get.mat.new(country1,indicator2)
-    df4=te.get.mat.new(country2,indicator1)
+    df1=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]],d1)
+    df2=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+    df3=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+    df4=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]],d1)
     df = rbind(df1,df2,df3,df4)
     df
   }else{
@@ -268,6 +275,9 @@ if(nchar(url)>310){
   if(contArray[1]=="all"){
     country1="all"
     country2="all"
+  }else if(length(contArray)==1){
+    country1=contArray[1]
+    country2=contArray[1]
   }else{
     country1="rAppsOCPU"
     country2="rAppsOCPU"
@@ -281,6 +291,9 @@ if(nchar(url)>310){
   if(indArray[1]=="all"){
     indicator1="all"
     indicator2="all"
+  }else if(length(contArray)==1){
+    indicator1=indArray[1]
+    indicator2=indArray[1]
   }else{
     indicator1="rAppsOCPU"
     indicator2="rAppsOCPU"
@@ -291,10 +304,10 @@ if(nchar(url)>310){
       indicator2=paste(indicator2,indArray[i],sep=",")
     }
   }
-  df1=te.get.hist.multi.free.new(country1,indicator1,d1)
-  df2=te.get.hist.multi.free.new(country2,indicator2,d1)
-  df3=te.get.hist.multi.free.new(country1,indicator2,d1)
-  df4=te.get.hist.multi.free.new(country2,indicator1,d1)
+  df1=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]],d1)
+  df2=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+  df3=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+  df4=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]],d1)
   df = rbind(df1,df2,df3,df4)
   df
 }else{
@@ -302,7 +315,8 @@ df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
 if(is.null(df$DateTime)){return (NULL)}
 df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
 df
-}}
+}
+}
 historicalToMatrix.new = function(c,countries,indicators){
   options(stringsAsFactors = FALSE)
   newdf=data.frame()
