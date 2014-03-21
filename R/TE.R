@@ -372,6 +372,7 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
 #reqArray=c("Portugal:Unemployment Rate","Greece:Unemployment Rate","Spain:Unemployment Rate")
 te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
 options(stringsAsFactors = FALSE)
+position=ifelse(!is.null(opts),ifelse(!opts,"none","right"),"right")
 if(is.null(indicator))
 {
   titl="Multiple Plot"
@@ -455,7 +456,9 @@ if(is.null(indicator))
           axis.line=element_line(colour = "grey",size=.3),
           panel.background = element_blank(),
           panel.grid.minor = element_line(colour = "grey",size=.2),
-          panel.grid.major = element_line(colour = "grey",size=.3)) 
+          panel.grid.major = element_line(colour = "grey",size=.3)) +
+  theme(legend.position=position)
+
     #+ ggtitle(titl) 
     #ylab(dataFrame$Category[1]) + 
     #ggtitle(paste( dataFrame$Country[1] ,"-", dataFrame$Category[1])) + 
