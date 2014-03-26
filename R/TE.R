@@ -157,6 +157,8 @@ te.connect.new=function(){
   a
 }
 te.get.mat.new=function(contArray,indArray){
+  contArray = unique(contArray)
+  indArray = unique(indArray)
   if(contArray[1]=="all"){
     country="all"
   }else{
@@ -253,6 +255,8 @@ te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
 }
 #contArray = c("Country","country", ... ) | indArray = c("indicator","indicator", ... )
 te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
+  contArray = unique(contArray)
+  indArray = unique(indArray)
   if(contArray[1]=="all"){
     country="all"
   }else{
