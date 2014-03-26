@@ -746,7 +746,7 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
   
   #df=te.get.hist.multi.free(c,country,indicator,"last")
-  if(length(country)>1 && length(indicator)>1){
+  if(length(unique(country))>1 && length(indicator)>1){
   df=te.get.mat.new(country,indicator[1])}else{df=te.get.mat.new(country,indicator)}
   df <- df[c("Country","Category","DateTime","Value","Unit")]
   
@@ -755,6 +755,9 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   
   if(length(unique(df$Category))==1) df = te.unit.converter(df)
   
+  for(rows in 1:dim(df)[1])
+    df$Category[rows] <- paste(substr(strsplit(df$Category[rows]," ")[[1]],1,5),collapse=" ")
+  
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
   df$Country[tolower(df$Country)=="euro area"] <- "EA17"
   df$Country[df$Value<0] <- paste("(-)",df$Country[df$Value<0],sep="")
@@ -762,10 +765,12 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   df$Value <- df$Value/sum(df$Value)
   df$p <- cumsum(df$Value)-diff(c(0,cumsum(df$Value)))*(1-0.5)
   
-  ggplot(data=df, aes(x=factor(1),y=Value, fill=factor(Country), weight=Value))+ 
+  df$Indicator <- df$Country
+  if(length(unique(df$Country))==1) df$Indicator <- df$Category
+  ggplot(data=df, aes(x=factor(1),y=Value, fill=factor(Indicator), weight=Value))+ 
     geom_bar(width=1,stat="identity",colour="black") + 
     coord_polar(theta="y")  + 
-    geom_text(aes(x=1.5,y=p, angle=-p*360,label=Country,vjust=0)) +
+    geom_text(aes(x=1.5,y=p, angle=-p*360,label=Indicator,vjust=0)) +
     theme_bw() + 
     theme(axis.title.x = element_blank(), 
           axis.title.y= element_blank(), 
