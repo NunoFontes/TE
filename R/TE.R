@@ -707,16 +707,44 @@ te.tree.map=function(c,country,indicator,d1="NULL",opts=NULL){
                    range=c(min(df$Value),max(df$Value)))
 }
 #te.tree.map(c,countries,"GDP")
+
+te.unit.converter=function(df){
+  df$Unit<-tolower(df$Unit)
+  for(rows in 1:dim(df)[1]){
+    if(length(grep("thousand million", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*100000
+    }
+    else if(length(grep("hundred million", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*100000000
+    }
+    else if(length(grep("billion", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*1000000000
+    }
+    else if(length(grep("million", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*1000000
+    }
+    else if(length(grep("hundred", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*100
+    }
+    else if(length(grep("thousand", df[rows,]$Unit))>0){
+      df[rows,]$Value = df[rows,]$Value*1000
+    } 
+  }  
+  df
+}
+
 te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
   
   #df=te.get.hist.multi.free(c,country,indicator,"last")
   if(length(country)>1 && length(indicator)>1){
   df=te.get.mat.new(country,indicator[1])}else{df=te.get.mat.new(country,indicator)}
-  df <- df[c("Country","Category","DateTime","Value")]
+  df <- df[c("Country","Category","DateTime","Value","Unit")]
   
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  
+  if(length(unique(df$Category))==1) df = te.unit.converter(df)
   
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
   df$Country[tolower(df$Country)=="euro area"] <- "EA17"
