@@ -388,7 +388,9 @@ if(is.null(indicator))
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  dataFrame$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
+  for(rows in 1:dim(dataFrame)[1])
+    dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
+  
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
@@ -405,7 +407,9 @@ if(is.null(indicator))
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  df$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
+  for(rows in 1:dim(dataFrame)[1])
+    dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
+  
   dataFrame$Indicator <- sapply(dataFrame, function(x) dataFrame$Category)[,1] 
   for(ca in unique(dataFrame$Indicator))
     #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
@@ -439,7 +443,9 @@ if(is.null(indicator))
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  dataFrame$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
+  for(rows in 1:dim(dataFrame)[1])
+    dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
+  
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
@@ -932,7 +938,8 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  df$Category <- sapply(df, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
+  for(rows in 1:dim(df)[1])
+  df$Category[rows] <- paste(substr(strsplit(df$Category[rows]," ")[[1]],1,5),collapse=" ")
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
   df$Country[tolower(df$Country)=="euro area"] <- "EA17"  
   if(length(country)==1){
