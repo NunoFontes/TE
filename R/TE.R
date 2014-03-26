@@ -388,7 +388,7 @@ if(is.null(indicator))
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  dataFrame$Category <- sapply(df, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
+  dataFrame$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
@@ -405,6 +405,7 @@ if(is.null(indicator))
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
+  df$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
   dataFrame$Indicator <- sapply(dataFrame, function(x) dataFrame$Category)[,1] 
   for(ca in unique(dataFrame$Indicator))
     #dataFrame[dataFrame$Indicator==ca,]$Value=as.numeric(scale(dataFrame[dataFrame$Indicator==ca,]$Value))
@@ -438,6 +439,7 @@ if(is.null(indicator))
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
+  dataFrame$Category <- sapply(dataFrame, function(x) paste(substr(strsplit(x," ")[[1]],1,3),collapse=" "))[,1]
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
