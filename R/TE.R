@@ -772,6 +772,8 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   df$DateTime <- as.yearmon(df$DateTime)
   #df$DateTime <- as.yearqtr(df$DateTime)
   ndf = cast(df,DateTime ~ Indicator,value = "Close",fun.aggregate="mean")
+  for(cols in 2:dim(ndf)[2]){ndf[!complete.cases(ndf[cols]),cols]<-NA; ndf[[cols]]<-na.approx(zoo(ndf[[cols]],as.yearmon(ndf[[1]],"%b%y")),na.rm=F)}
+  #ndf
   names=names(ndf)
   #ndf=as.data.frame(na.omit(na.trim(na.approx(ndf[,2:length(names(ndf))]))))
   #names(ndf)=names[2:length(names)]
@@ -909,6 +911,8 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   df$DateTime <- as.yearmon(df$DateTime)
   #df$DateTime <- as.yearqtr(df$DateTime)
   ndf = cast(df,DateTime ~ Indicator,value = "Close",fun.aggregate="mean")
+  for(cols in 2:dim(ndf)[2]){ndf[!complete.cases(ndf[cols]),cols]<-NA; ndf[[cols]]<-na.approx(zoo(ndf[[cols]],as.yearmon(ndf[[1]],"%b%y")),na.rm=F)}
+  #ndf
   names=names(ndf)
   if(length(na.omit(na.trim(ndf))[,1])<3){stop("Too Little Info. One or more Indicators are sparse in data, re-do selection.")}
   ndf=as.data.frame(na.omit(na.approx(na.trim(ndf[,2:length(names(ndf))]))))
