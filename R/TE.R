@@ -711,7 +711,8 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
   
   #df=te.get.hist.multi.free(c,country,indicator,"last")
-  df=te.get.mat.new(country,indicator)
+  if(length(country)>1 && length(indicator)>1){
+  df=te.get.mat.new(country,indicator[1])}else{df=te.get.mat.new(country,indicator)}
   df <- df[c("Country","Category","DateTime","Value")]
   
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
