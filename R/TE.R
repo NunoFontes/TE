@@ -923,7 +923,7 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 
 te.testObj = function(obj){
   
-  plot(1:10,main=paste(obj, collapse='-'))
+  plot(1:10,main=obj$test)
 }
 
 
