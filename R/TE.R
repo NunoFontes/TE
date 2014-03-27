@@ -949,9 +949,10 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
+  
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
-  if(length(country)>9){indicator = indicator[1]}
-  if(length(indicator)>9){country = country[1]}
+  if(length(country)>9){indicator = indicator[1]; if(!is.null(opts$title) && opts$title){theTitle=indicator}else{theTitle=""}}
+  if(length(indicator)>9){country = country[1]; if(!is.null(opts$title) && opts$title){theTitle=country}else{theTitle=""}}
   df=te.get.hist.multi.free.new(country,indicator,d1="2007-12-01")
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -981,7 +982,7 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   names(ndf)=names[2:length(names)]
   pairs(as.data.frame(ndf[,1:length(names(ndf))]),
         lower.panel=panel.smooth, upper.panel=panel.cor,gap=0.1,
-        cex=.1,cex.labels=1.2,main="")
+        cex=.1,cex.labels=1.2,main=theTitle)
 }
 
 ## Function for arranging ggplots. use png(); arrange(p1, p2, ncol=1); dev.off() to save.
