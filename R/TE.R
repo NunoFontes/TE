@@ -1055,8 +1055,9 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
     
   theLatest = c()
   trend = c()
-  for(i in 1:length(unique(dataFrame$Indicator))){
-  temp = (dataFrame[dataFrame$Indicator == stats$d[i],])
+  inStudy = unique(dataFrame$Indicator)
+  for(i in 1:length(inStudy)){
+  temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
   theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
   theLatestFew = lm(length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1~head(temp[order(temp$DateTime, decreasing = T),],5)$Close)
   trend = cbind(trend,theLatestFew$coefficients[[2]])
