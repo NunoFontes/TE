@@ -457,7 +457,7 @@ if(is.null(indicator))
 
   labelsbreak=paste(round(as.numeric(max(dataFrame$DateTime)-min(dataFrame$DateTime), units = "days")/300),"month")
   #ggplot(dataFrame,aes(x=DateTime, y=Value, colour=Indicator)) +
-  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
+ ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
     geom_line() + 
     #geom_point(size = 3) +
     #scale_colour_manual(values = c("7.4" = "red","#4863A0")) +
@@ -969,6 +969,38 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   pairs(as.data.frame(ndf[,1:length(names(ndf))]),
         lower.panel=panel.smooth, upper.panel=panel.cor,gap=0.1,
         cex=.1,cex.labels=1.2,main="")
+}
+
+## Function for arranging ggplots. use png(); arrange(p1, p2, ncol=1); dev.off() to save.
+require(grid)
+vp.layout <- function(x, y) viewport(layout.pos.row=x, layout.pos.col=y)
+
+pl1 = te.plot.multi(1,country,indicator[1])
+pl2 = te.plot.multi(1,country,indicator[2])
+pl3 = te.plot.multi(1,country,indicator[3])
+
+arrange_ggplot2(pl1,pl2,pl3,ncol=1)
+
+arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
+  dots <- list(...)
+  n <- length(dots)
+  if(is.null(nrow) & is.null(ncol)) { nrow = floor(n/2) ; ncol = ceiling(n/nrow)}
+  if(is.null(nrow)) { nrow = ceiling(n/ncol)}
+  if(is.null(ncol)) { ncol = ceiling(n/nrow)}
+  ## NOTE see n2mfrow in grDevices for possible alternative
+  grid.newpage()
+  pushViewport(viewport(layout=grid.layout(nrow,ncol) ) )
+  ii.p <- 1
+  for(ii.row in seq(1, nrow)){
+    ii.table.row <- ii.row	
+    if(as.table) {ii.table.row <- nrow - ii.table.row + 1}
+    for(ii.col in seq(1, ncol)){
+      ii.table <- ii.p
+      if(ii.p > n) break
+      print(dots[[ii.table]], vp=vp.layout(ii.table.row, ii.col))
+      ii.p <- ii.p + 1
+    }
+  }
 }
 
 #historical.matrix = function(c,countries,indicators,d1="2005"){
