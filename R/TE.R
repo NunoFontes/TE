@@ -1013,9 +1013,6 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl2 = te.plot.multi(1,country,indicator[2])
 #pl3 = te.plot.multi(1,country,indicator[3])
 
-
-
-
 te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
   theFunction=get(c)
   plotsList = list()
@@ -1038,6 +1035,10 @@ te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
   if(length(plotsList)>2){
     arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],ncol=1)
   }
+}
+te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
+  historical=te.get.hist.multi.free.new(country,indicator,d1)
+  head(historical)
 }
 
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
