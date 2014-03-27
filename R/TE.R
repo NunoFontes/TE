@@ -1038,6 +1038,8 @@ te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
 }
 
 te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
+  options(stringsAsFactors = FALSE)
+  
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   #head(dataFrame)
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
