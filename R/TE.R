@@ -367,7 +367,6 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
     ggtitle(paste( dataFrame$Country[1] ,"-", dataFrame$Category[1])) + 
     theme(
         plot.title = theTitle, 
-        plot.title = element_blank(), 
         panel.border=element_blank(),
         axis.line=element_line(colour = "grey",size=.3),
         panel.background = element_blank(),
@@ -778,7 +777,8 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
     coord_polar(theta="y")  + 
     geom_text(aes(x=1.5,y=p, angle=-p*360,label=Indicator,vjust=0)) +
     theme_bw() + 
-    theme(axis.title.x = element_blank(), 
+    theme(plot.title = theTitle, 
+          axis.title.x = element_blank(), 
           axis.title.y= element_blank(), 
           axis.text.x=element_blank(), 
           axis.text.y=element_blank(), 
