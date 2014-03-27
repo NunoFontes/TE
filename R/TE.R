@@ -473,9 +473,9 @@ if(is.null(indicator))
           panel.background = element_blank(),
           panel.grid.minor = element_line(colour = "grey",size=.2),
           panel.grid.major = element_line(colour = "grey",size=.3)) +
-  theme(legend.position=position)
+    theme(legend.position=position) +
 
-    + ggtitle(titl) 
+    ggtitle(titl) + 
     #ylab(dataFrame$Category[1]) + 
     #ggtitle(paste( dataFrame$Country[1] ,"-", dataFrame$Category[1])) + 
     theme(plot.title = theTitle)
