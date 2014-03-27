@@ -376,8 +376,10 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
 }
 #reqArray=c("Portugal:Unemployment Rate","Greece:Unemployment Rate","Spain:Unemployment Rate")
 te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
+  
+if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
+if(!is.null(opts$legend) && !opts$legend){position="right"}else{position="none"}
 options(stringsAsFactors = FALSE)
-position=ifelse(!is.null(opts),ifelse(!opts,"none","right"),"right")
 if(is.null(indicator))
 {
   titl="Multiple Plot"
@@ -473,10 +475,10 @@ if(is.null(indicator))
           panel.grid.major = element_line(colour = "grey",size=.3)) +
   theme(legend.position=position)
 
-    #+ ggtitle(titl) 
+    + ggtitle(titl) 
     #ylab(dataFrame$Category[1]) + 
     #ggtitle(paste( dataFrame$Country[1] ,"-", dataFrame$Category[1])) + 
-    #theme(plot.title = element_text(face="bold"))
+    theme(plot.title = theTitle)
 }
 te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
   if(length(country)>70){stop("Too many indicators to show. Please re-do selection.")}
