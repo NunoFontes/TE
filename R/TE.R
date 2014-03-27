@@ -1011,9 +1011,10 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 
 
 
-te.tableOfCharts = function(type,howmany,country,indicator,d1="NULL",opts=NULL){
+te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
   theFunction=get(type)
   plotsList = list()
+  howmany = 3
   if(length(indicator)>1){
       for(i in 1:min(howmany,length(country))){
         plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
