@@ -378,7 +378,7 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
 te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
   
 if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
-if(!is.null(opts$legend) && !opts$legend){position="right"}else{position="none"}
+if(!is.null(opts$legend) && opts$legend){position="right"}else{position="none"}
 options(stringsAsFactors = FALSE)
 if(is.null(indicator))
 {
