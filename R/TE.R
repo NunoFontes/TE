@@ -1016,11 +1016,11 @@ te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
   plotsList = list()
   howmany = 3
   if(length(indicator)>1){
-      for(i in 1:min(howmany,length(country))){
+      for(i in 1:min(howmany,length(indicator))){
         plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
       }
     }else{
-      for(i in 1:min(howmany,length(indicator))){
+      for(i in 1:min(howmany,length(country))){
     plotsList[[i]]=theFunction(1,country[i],indicator,d1,opts)
     }
   }
