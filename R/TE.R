@@ -1012,7 +1012,7 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 
 
 te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
-  theFunction=get(type)
+  theFunction=get(c)
   plotsList = list()
   howmany = 3
   if(length(indicator)>1){
