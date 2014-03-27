@@ -1036,6 +1036,7 @@ te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
     arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],ncol=1)
   }
 }
+
 te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   #head(dataFrame)
@@ -1047,15 +1048,22 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
   
-  stats = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),FUN=function(x) c(avg=mean(x), min=min(x), max=max(x), sd=sd(x) ) )
+  theMean = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"mean" )
+  theMax = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"max" )
+  theMin = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"min" )
+  theSd = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"sd" )
+    
+  theLatest = c()
+  trend = c()
+  for(i in 1:length(unique(dataFrame$Indicator))){
+  temp = (dataFrame[dataFrame$Indicator == stats$d[i],])
+  theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
+  theLatestFew = lm(length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1~head(temp[order(temp$DateTime, decreasing = T),],5)$Close)
+  trend = cbind(trend,theLatestFew$coefficients[[2]])
+  }
   
-  temp = (dataFrame[dataFrame$Indicator == stats$d[1],])
-  head(temp[order(temp$DateTime, decreasing = T),],1)$Close
-  
-  stats = cbind(stats,rep(0,dim(stats)[1]))
+  stats = cbind(theMean,theMax$x,theMin$x,theSd$x,t(theLatest),t(trend))
   stats
-  #histMat = historicalToMatrix.new(1,country,indicator)
-  
 }
 
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
