@@ -1065,7 +1065,8 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
   trend = cbind(trend,theLatestFew$coefficients[[2]])
   }
   
-  stats = cbind(theMean,theMax$x,theMin$x,theSd$x,t(theLatest),t(trend))
+  stats = cbind(t(theLatest),theMean,theMax$x,theMin$x,theSd$x,t(trend))
+  names(stats) <- c("latest","mean","max","min","sd","trend")
   stats
 }
 
