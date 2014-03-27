@@ -483,7 +483,7 @@ if(is.null(indicator))
 te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
   if(length(country)>70){stop("Too many indicators to show. Please re-do selection.")}
   #d=te.get.hist.multi.free(c,country,indicator,"last")
-  d=te.get.mat.new(country,indicator)
+  d=te.get.mat.new(country,indicator[1])
   if(is.null(d)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(d)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   titl = paste(indicator)
