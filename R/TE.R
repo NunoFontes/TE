@@ -950,6 +950,8 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
+  if(length(country)>9){indicator = indicator[1]}
+  if(length(indicator)>9){country = country[1]}
   df=te.get.hist.multi.free.new(country,indicator,d1="2007-12-01")
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(df)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
