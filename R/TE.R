@@ -1037,8 +1037,35 @@ te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
   }
 }
 te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
-  historical=te.get.hist.multi.free.new(country,indicator,d1)
-  head(historical)
+  dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
+  #head(dataFrame)
+  if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  
+  if(length(country)==1){
+    for(rows in 1:dim(dataFrame)[1])
+      dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
+    dataFrame$Indicator <- sapply(dataFrame, function(x) dataFrame$Category)[,1] 
+  }else if(length(indicator)==1){
+    dataFrame$Indicator <- dataFrame$Country 
+  }else{
+    for(rows in 1:dim(dataFrame)[1])
+      dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
+    dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
+    dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
+    dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
+  }
+  
+  stats = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),FUN=function(x) c(avg=mean(x), min=min(x), max=max(x), sd=sd(x) ) )
+  
+  temp = (dataFrame[dataFrame$Indicator == stats$d[1],])
+  head(temp[order(temp$DateTime, decreasing = T),],1)$Close
+  
+  stats = cbind(stats,rep(0,dim(stats)[1]))
+  stats
+  #histMat = historicalToMatrix.new(1,country,indicator)
+  
 }
 
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
