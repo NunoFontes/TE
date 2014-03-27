@@ -1043,19 +1043,9 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
-  if(length(country)==1){
-    for(rows in 1:dim(dataFrame)[1])
-      dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
-    dataFrame$Indicator <- sapply(dataFrame, function(x) dataFrame$Category)[,1] 
-  }else if(length(indicator)==1){
-    dataFrame$Indicator <- dataFrame$Country 
-  }else{
-    for(rows in 1:dim(dataFrame)[1])
-      dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
-    dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
-    dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
-    dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
-  }
+  dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
+  dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
+  dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
   
   stats = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),FUN=function(x) c(avg=mean(x), min=min(x), max=max(x), sd=sd(x) ) )
   
