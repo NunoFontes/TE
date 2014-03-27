@@ -7,4 +7,4 @@ Author: Antonio J F Sousa, Nuno Fontes
 Maintainer: Support Team <support@tradingeconomics.com>
 Description: R Package to access data hosted by Trading Economics
 License: Open Source
-Imports: utils,Rcpp,zoo,ggplot2,scales,countrycode,stats,RJSONIO,reshape,treemap,plyr,RColorBrewer
+Imports: utils,Rcpp,zoo,ggplot2,scales,countrycode,stats,RJSONIO,reshape,treemap,plyr,RColorBrewer,grid

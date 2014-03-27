@@ -39,6 +39,7 @@ if (!require(RCurl)){
 #library(plyr)
 require(scales)
 library(ellipse)
+require(grid)
 library(RColorBrewer)
 #library(treemap)
 }
@@ -980,38 +981,60 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 }
 
 ## Function for arranging ggplots. use png(); arrange(p1, p2, ncol=1); dev.off() to save.
-#require(grid)
-#vp.layout <- function(x, y) viewport(layout.pos.row=x, layout.pos.col=y)
 
+vp.layout <- function(x, y) viewport(layout.pos.row=x, layout.pos.col=y)
+arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
+  dots <- list(...)
+  n <- length(dots)
+  if(is.null(nrow) & is.null(ncol)) { nrow = floor(n/2) ; ncol = ceiling(n/nrow)}
+  if(is.null(nrow)) { nrow = ceiling(n/ncol)}
+  if(is.null(ncol)) { ncol = ceiling(n/nrow)}
+  ## NOTE see n2mfrow in grDevices for possible alternative
+  grid.newpage()
+  pushViewport(viewport(layout=grid.layout(nrow,ncol) ) )
+  ii.p <- 1
+  for(ii.row in seq(1, nrow)){
+    ii.table.row <- ii.row  
+    if(as.table) {ii.table.row <- nrow - ii.table.row + 1}
+    for(ii.col in seq(1, ncol)){
+      ii.table <- ii.p
+      if(ii.p > n) break
+      print(dots[[ii.table]], vp=vp.layout(ii.table.row, ii.col))
+      ii.p <- ii.p + 1
+    }
+  }
+}
 #pl1 = te.plot.multi(1,country,indicator[1])
 #pl2 = te.plot.multi(1,country,indicator[2])
 #pl3 = te.plot.multi(1,country,indicator[3])
 
-#arrange_ggplot2(pl1,pl2,pl3,ncol=1)
-
-#arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
-#  dots <- list(...)
-#  n <- length(dots)
-#  if(is.null(nrow) & is.null(ncol)) { nrow = floor(n/2) ; ncol = ceiling(n/nrow)}
-#  if(is.null(nrow)) { nrow = ceiling(n/ncol)}
-#  if(is.null(ncol)) { ncol = ceiling(n/nrow)}
-#  ## NOTE see n2mfrow in grDevices for possible alternative
-#  grid.newpage()
-#  pushViewport(viewport(layout=grid.layout(nrow,ncol) ) )
-#  ii.p <- 1
-#  for(ii.row in seq(1, nrow)){
-#    ii.table.row <- ii.row	
-#    if(as.table) {ii.table.row <- nrow - ii.table.row + 1}
-#    for(ii.col in seq(1, ncol)){
-#      ii.table <- ii.p
-#      if(ii.p > n) break
-#      print(dots[[ii.table]], vp=vp.layout(ii.table.row, ii.col))
-#      ii.p <- ii.p + 1
-#    }
-#  }
-#}
 
 
+
+te.tableOfCharts = function(type,howmany,country,indicator,d1="NULL",opts=NULL){
+  theFunction=get(type)
+  plotsList = list()
+  if(length(indicator)>1){
+      for(i in 1:min(howmany,length(country))){
+        plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
+      }
+    }else{
+      for(i in 1:min(howmany,length(indicator))){
+    plotsList[[i]]=theFunction(1,country[i],indicator,d1,opts)
+    }
+  }
+  if(length(plotsList)==1){
+    arrange_ggplot2(plotsList[[1]],ncol=1)
+  }
+  if(length(plotsList)==2){
+    arrange_ggplot2(plotsList[[1]],plotsList[[2]],ncol=1)
+  }
+  if(length(plotsList)>2){
+    arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],ncol=1)
+  }
+}
+
+#te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
 #historical.matrix = function(c,countries,indicators,d1="2005"){
 #  options(stringsAsFactors = FALSE)
