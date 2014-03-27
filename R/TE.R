@@ -922,7 +922,8 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #ASIA= 
 
 te.testObj = function(obj){
-  plot(1:10)
+  
+  plot(1:10,title=obj)
 }
 
 
