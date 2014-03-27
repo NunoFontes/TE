@@ -342,6 +342,7 @@ historicalToMatrix.new = function(c,countries,indicators){
   newdf
 }
 te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
+  if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
   #dataFrame=te.get.hist(c,country,indicator,d1)
   dataFrame=te.get.hist.new(country,indicator,d1)
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -364,7 +365,7 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
     ylab("") + 
     ggtitle(paste( dataFrame$Country[1] ,"-", dataFrame$Category[1])) + 
     theme(
-        #plot.title = element_text(face="bold"), 
+        plot.title = theTitle, 
         plot.title = element_blank(), 
         panel.border=element_blank(),
         axis.line=element_line(colour = "grey",size=.3),
@@ -922,7 +923,6 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #ASIA= 
 
 te.testObj = function(obj){
-  
   plot(1:10,main=obj$test)
 }
 
