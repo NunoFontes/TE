@@ -749,6 +749,8 @@ te.unit.converter=function(df){
 te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
   
+  if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
+  
   #df=te.get.hist.multi.free(c,country,indicator,"last")
   if(length(unique(country))>1 && length(indicator)>1){
   df=te.get.mat.new(country,indicator[1])}else{df=te.get.mat.new(country,indicator)}
@@ -784,8 +786,8 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
           panel.grid.major = element_blank(), 
           panel.border = element_blank(), 
           axis.ticks=element_blank(),
-          legend.position = "none") 
-  #+ ggtitle(indicator)
+          legend.position = "none") +
+   ggtitle(indicator)
 }
 te.table=function(c,countries,indicators,d1="2005",what="NULL"){
   if(what=="te.plot.compare.scale"|| what=="te.plot.compare" || what=="te.geomap" || what=="te.tree.map" || what=="te.heat.map"){d1="last"}
