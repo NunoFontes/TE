@@ -967,7 +967,7 @@ te.historicalPlusForecasts=function(country,indicator,DateTime,Value,Model,LastU
           panel.background = element_blank(),
           panel.grid.minor = element_line(colour = "grey",size=.2),
           panel.grid.major = element_line(colour = "grey",size=.3)) +
-    theme(legend.position="top") +
+    theme(legend.position="none") +
     scale_colour_manual(values = rep("red",50)) +
     theme(plot.title = element_blank())
 }
