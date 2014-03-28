@@ -956,12 +956,12 @@ te.historicalPlusForecasts=function(country,indicator,DateTime,Value,Model,LastU
   theHistorical=te.get.hist.multi.free.new(country,indicator,d1)
   theHistorical$DateTime = as.Date(theHistorical$DateTime)
   theforecasts$DateTime = as.Date(theforecasts$DateTime)
-  dataFrame=rbind(tail(theHistorical[c("DateTime","Close","Category")],25),theforecasts[c("DateTime","Close","Category")])
+  dataFrame=rbind(tail(theHistorical[c("DateTime","Close","Category")],75),theforecasts[c("DateTime","Close","Category")])
   ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Category)) + 
     geom_line() + 
     xlab("") + ylab("") +
     geom_line(data=dataFrame[dataFrame$Category==indicator, ], aes(x=DateTime, y=Close), colour="black", size=1) +
-    theme(axis.text.y = element_blank(), 
+    theme(axis.text.y = element_text(), 
           panel.border=element_blank(),
           axis.line=element_line(colour = "grey",size=.3),
           panel.background = element_blank(),
