@@ -154,7 +154,7 @@ historicalToMatrix = function(c,countries,indicators){
 ################
 te.connect.new=function(){
   #a = 'https://teapi.azurewebsites.net';
-  a = 'http://api2.tradingeconomics.com';
+  a = 'http://api.tradingeconomics.com';
   a
 }
 te.get.mat.new=function(contArray,indArray){
