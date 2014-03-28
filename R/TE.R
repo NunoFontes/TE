@@ -936,13 +936,12 @@ library(data.table)
 te.cleanForecasts = function(DateTime,Value,Model,LastUpdate){
   options(stringsAsFactors = FALSE)
   df = data.frame(DateTime,Value,Model,LastUpdate)
-  
   myModels = unique(Model)
   myCleanDataFrame = c()
   for(m in 1:length(myModels)){
     dfTempModel = df[df$Model==myModels[m],]
     dfTempModel = dfTempModel[order(dfTempModel$LastUpdate, decreasing = T),]  
-    Dates=unique(temp$DateTime)
+    Dates=unique(dfTempModel$DateTime)
     for(d in 1:length(Dates)){
       myCleanDataFrame = rbind(myCleanDataFrame,head((dfTempModel[dfTempModel$DateTime == Dates[d],]),1))
     }
