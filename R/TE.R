@@ -927,8 +927,8 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #AMERICAS=
 #ASIA= 
 
-te.testObj = function(obj){
-  plot(1:10,main=obj$test)
+te.testForecasts = function(a){
+  plot(a)
 }
 
 
