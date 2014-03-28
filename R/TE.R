@@ -929,13 +929,26 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 DateTime = c("2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-11-30","2014-10-31","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-08-31","2014-07-31","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-05-31","2014-04-30","2014-04-30","2014-04-30","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31")
 Value = c(5.9,5.9,5.9,6.3,6.3,6.7,6.7,6.9,7,7.2,7.3,6,6,6.1,6.1,6.1,6.4,6.4,6.2,6.3,6.3,6.3,6.3,6.6,6.6,6.4,6.5,6.7,6.7,6.6,6.6,6.6,6.7,6.7,6.7,6.7,6.9,6.8,6.8,7,7,7,6.9,6.9,7,7.1,7.1,7.1)
 Model = rep(c("Seasonal V1","Univariate"),length(Value)/2)
-LastUpdate = c(as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),
-as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-11T01:20:00.000Z"),as.Date("2014-01-10T17:27:00.000Z"),as.Date("2013-12-06T17:13:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T18:05:00.000Z"),as.Date("2013-09-26T17:33:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2013-10-22T16:15:00.000Z"))
-te.testForecasts = function(DateTime,Value,Model,LastUpdate){
-  LastUpdate = as.Date(LastUpdate)
-  plot(LastUpdate,Value,main=".")
-}
+LastUpdate = c(as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-11T01:20:00.000Z"),as.Date("2014-01-10T17:27:00.000Z"),as.Date("2013-12-06T17:13:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T18:05:00.000Z"),as.Date("2013-09-26T17:33:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2013-10-22T16:15:00.000Z"))
 
+
+library(data.table)
+te.cleanForecasts = function(DateTime,Value,Model,LastUpdate){
+  options(stringsAsFactors = FALSE)
+  df = data.frame(DateTime,Value,Model,LastUpdate)
+  
+  myModels = unique(Model)
+  myCleanDataFrame = c()
+  for(m in 1:length(myModels)){
+    dfTempModel = df[df$Model==myModels[m],]
+    dfTempModel = dfTempModel[order(dfTempModel$LastUpdate, decreasing = T),]  
+    Dates=unique(temp$DateTime)
+    for(d in 1:length(Dates)){
+      myCleanDataFrame = rbind(myCleanDataFrame,head((dfTempModel[dfTempModel$DateTime == Dates[d],]),1))
+    }
+  }
+  myCleanDataFrame
+}
 
 indicators=c("gdp annual growth rate","inflation rate")
 countries=c("portugal","greece","spain","united states","united kingdom","japan")
@@ -1064,14 +1077,14 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
   trend = c()
   inStudy = unique(dataFrame$Indicator)
   for(i in 1:length(inStudy)){
-  temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
-  theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
-  LatestArray = head(temp[order(temp$DateTime, decreasing = T),],5)$Close
-  vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1
-  group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
-  weight <- c(LatestArray, vanillaArray)
-  theLatestFew = lm(weight~group)
-  trend = cbind(trend,theLatestFew$coefficients[[2]])
+    temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
+    theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
+    LatestArray = head(temp[order(temp$DateTime, decreasing = T),],5)$Close
+    vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1
+    group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
+    weight <- c(LatestArray, vanillaArray)
+    theLatestFew = lm(weight~group)
+    trend = cbind(trend,theLatestFew$coefficients[[2]])
   }
   
   stats = cbind(t(theLatest),theMean,theMax$x,theMin$x,theSd$x,t(trend))
