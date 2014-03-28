@@ -928,7 +928,7 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #ASIA= 
 DateTime = c("2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-11-30","2014-10-31","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-08-31","2014-07-31","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-05-31","2014-04-30","2014-04-30","2014-04-30","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31")
 Value = c(5.9,5.9,5.9,6.3,6.3,6.7,6.7,6.9,7,7.2,7.3,6,6,6.1,6.1,6.1,6.4,6.4,6.2,6.3,6.3,6.3,6.3,6.6,6.6,6.4,6.5,6.7,6.7,6.6,6.6,6.6,6.7,6.7,6.7,6.7,6.9,6.8,6.8,7,7,7,6.9,6.9,7,7.1,7.1,7.1)
-Model = rep(c("Seasonal V1","Univariate"),length(Value)/2)
+Model = rep("Seasonal V1",length(Value))
 LastUpdate = c(as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-11T01:20:00.000Z"),as.Date("2014-01-10T17:27:00.000Z"),as.Date("2013-12-06T17:13:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T18:05:00.000Z"),as.Date("2013-09-26T17:33:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2013-10-22T16:15:00.000Z"))
 
 
@@ -948,6 +948,28 @@ te.cleanForecasts = function(DateTime,Value,Model,LastUpdate){
   }
   myCleanDataFrame
 }
+
+te.historicalPlusForecasts = function(country,indicator,DateTime,Value,Model,LastUpdate){
+  theforecasts=te.cleanForecasts(DateTime,Value,Model,LastUpdate)
+  names(theforecasts) = c("DateTime","Close","Category","LastUpdate")
+  d1 = as.character(as.numeric(format(Sys.Date(),"%Y"))-5)
+  theHistorical=te.get.hist.multi.free.new(country,indicator,d1)
+  theHistorical$DateTime = as.Date(theHistorical$DateTime)
+  theforecasts$DateTime = as.Date(theforecasts$DateTime)
+  dataFrame=rbind(theforecasts[c("DateTime","Close","Category")],theHistorical[c("DateTime","Close","Category")])
+  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Category)) + 
+    geom_line() + 
+    xlab("") + ylab("") +
+    theme(axis.text.y = element_blank(), 
+          panel.border=element_blank(),
+          axis.line=element_line(colour = "grey",size=.3),
+          panel.background = element_blank(),
+          panel.grid.minor = element_line(colour = "grey",size=.2),
+          panel.grid.major = element_line(colour = "grey",size=.3)) +
+    theme(legend.position="top") +
+    theme(plot.title = element_blank())
+}
+
 
 indicators=c("gdp annual growth rate","inflation rate")
 countries=c("portugal","greece","spain","united states","united kingdom","japan")
