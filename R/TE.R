@@ -949,14 +949,14 @@ te.cleanForecasts = function(DateTime,Value,Model,LastUpdate){
   myCleanDataFrame
 }
 
-te.historicalPlusForecasts = function(country,indicator,DateTime,Value,Model,LastUpdate){
+te.historicalPlusForecasts=function(country,indicator,DateTime,Value,Model,LastUpdate){
   theforecasts=te.cleanForecasts(DateTime,Value,Model,LastUpdate)
   names(theforecasts) = c("DateTime","Close","Category","LastUpdate")
   d1 = as.character(as.numeric(format(Sys.Date(),"%Y"))-5)
   theHistorical=te.get.hist.multi.free.new(country,indicator,d1)
   theHistorical$DateTime = as.Date(theHistorical$DateTime)
   theforecasts$DateTime = as.Date(theforecasts$DateTime)
-  dataFrame=rbind(theforecasts[c("DateTime","Close","Category")],theHistorical[c("DateTime","Close","Category")])
+  dataFrame=rbind(theforecasts[c("DateTime","Close","Category")],tail(theHistorical[c("DateTime","Close","Category")],25))
   ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Category)) + 
     geom_line() + 
     xlab("") + ylab("") +
