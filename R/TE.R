@@ -388,8 +388,8 @@ if(is.null(indicator))
   dataFrame=te.get.hist.multi.new(country,d1)
   
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
-  if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
-  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  if(length(dataFrame)<2){stop(paste("Return to Sender: No Such Country - Indicator Pair.",length(dataFrame),sep"-"))}
+  if(length(dataFrame$Close)<2){stop(paste("Return to Sender: No Such Country - Indicator Pair.",length(dataFrame),sep"-"))}
   
   for(rows in 1:dim(dataFrame)[1])
     dataFrame$Category[rows] <- paste(substr(strsplit(dataFrame$Category[rows]," ")[[1]],1,5),collapse=" ")
