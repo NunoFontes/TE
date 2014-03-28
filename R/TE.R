@@ -376,11 +376,11 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
 }
 #reqArray=c("Portugal:Unemployment Rate","Greece:Unemployment Rate","Spain:Unemployment Rate")
 te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
-  stop(paste("fy",typeof(indicator),length(indicator),sep="-"))
+#stop(paste("fy",typeof(indicator),length(indicator),sep="-"))
 if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
 if(!is.null(opts$legend) && !opts$legend){position="none"}else{position="right"}
 options(stringsAsFactors = FALSE)
-if(is.null(indicator))
+if(is.null(indicator) || length(indicator)==0)
 {
   titl="Multiple Plot"
   axis=element_blank()
