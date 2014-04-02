@@ -1101,8 +1101,8 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
     theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
-    LatestArray = head(temp[order(temp$DateTime, decreasing = T),],5)$Close
-    vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1
+    LatestArray = head(temp[order(temp$DateTime, decreasing = T),],3)$Close
+    vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],3)$Close):1
     group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
     weight <- c(vanillaArray,LatestArray)
     theLatestFew = lm(weight~group)
