@@ -1077,7 +1077,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
   }
 }
 
-te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
+te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
@@ -1097,14 +1097,14 @@ te.stats.analysis = function(c,country,indicator,d1="NULL",opts=NULL){
     
   theLatest = c()
   trend = c()
-  inStudy = unique(dataFrame$Indicator)
+  inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
     theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
     LatestArray = head(temp[order(temp$DateTime, decreasing = T),],5)$Close
     vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],5)$Close):1
     group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
-    weight <- c(LatestArray, vanillaArray)
+    weight <- c(vanillaArray,LatestArray)
     theLatestFew = lm(weight~group)
     trend = cbind(trend,theLatestFew$coefficients[[2]])
   }
