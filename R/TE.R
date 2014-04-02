@@ -378,7 +378,7 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
 te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
 #stop(paste("fy",typeof(indicator),length(indicator),sep="-"))
 if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
-if(!is.null(opts$legend) && !opts$legend){position="none"}else{position="right"}
+if(is.null(opts$legend)){position="none"}else{position=opts$legend}
 options(stringsAsFactors = FALSE)
 if(is.null(indicator) || length(indicator)==0)
 {
@@ -926,11 +926,6 @@ te.correlation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
 #G20=
 #AMERICAS=
 #ASIA= 
-DateTime = c("2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-12-31","2014-11-30","2014-10-31","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-09-30","2014-08-31","2014-07-31","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-06-30","2014-05-31","2014-04-30","2014-04-30","2014-04-30","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-03-31","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-02-28","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31","2014-01-31")
-Value = c(5.9,5.9,5.9,6.3,6.3,6.7,6.7,6.9,7,7.2,7.3,6,6,6.1,6.1,6.1,6.4,6.4,6.2,6.3,6.3,6.3,6.3,6.6,6.6,6.4,6.5,6.7,6.7,6.6,6.6,6.6,6.7,6.7,6.7,6.7,6.9,6.8,6.8,7,7,7,6.9,6.9,7,7.1,7.1,7.1)
-Model = rep("Seasonal V1",length(Value))
-LastUpdate = c(as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-11T01:20:00.000Z"),as.Date("2014-01-10T17:27:00.000Z"),as.Date("2013-12-06T17:13:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T18:05:00.000Z"),as.Date("2013-09-26T17:33:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2014-03-20T15:22:45.000Z"),as.Date("2014-03-20T14:11:58.000Z"),as.Date("2014-03-20T14:11:56.000Z"),as.Date("2014-01-23T16:23:00.000Z"),as.Date("2014-01-23T16:22:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2014-01-10T18:34:00.000Z"),as.Date("2014-01-10T17:28:00.000Z"),as.Date("2013-12-06T17:14:00.000Z"),as.Date("2013-11-20T13:47:00.000Z"),as.Date("2013-11-08T17:34:00.000Z"),as.Date("2013-10-22T16:15:00.000Z"))
-
 
 library(data.table)
 te.cleanForecasts = function(DateTime,Value,Model,LastUpdate){
@@ -971,7 +966,6 @@ te.historicalPlusForecasts=function(country,indicator,DateTime,Value,Model,LastU
     scale_colour_manual(values = rep("red",50)) +
     theme(plot.title = element_blank())
 }
-
 
 indicators=c("gdp annual growth rate","inflation rate")
 countries=c("portugal","greece","spain","united states","united kingdom","japan")
@@ -1054,27 +1048,32 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl2 = te.plot.multi(1,country,indicator[2])
 #pl3 = te.plot.multi(1,country,indicator[3])
 
-te.tableOfCharts = function(c,country,indicator,d1="NULL",opts=NULL){
+te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
   theFunction=get(c)
   plotsList = list()
-  howmany = 3
-  if(length(indicator)>1){
+  howmany = 4
+  if(length(indicator)>1 && length(country)>1){
       for(i in 1:min(howmany,length(indicator))){
         plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
       }
     }else{
-      for(i in 1:min(howmany,length(country))){
-    plotsList[[i]]=theFunction(1,country[i],indicator,d1,opts)
-    }
+    plotsList[[1]]=theFunction(1,country,indicator,d1,opts)
   }
   if(length(plotsList)==1){
-    arrange_ggplot2(plotsList[[1]],ncol=1)
+    if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
+    arrange_ggplot2(plotsList[[1]],ncol=ncols)
   }
   if(length(plotsList)==2){
-    arrange_ggplot2(plotsList[[1]],plotsList[[2]],ncol=1)
+    if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
+    arrange_ggplot2(plotsList[[1]],plotsList[[2]],ncol=ncols)
   }
-  if(length(plotsList)>2){
-    arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],ncol=1)
+  if(length(plotsList)==3){
+    if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
+    arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],ncol=ncols)
+  }
+  if(length(plotsList)>3){
+    if(!is.null(opts) && opts$align=='horizontal'){ncols=4}else{ncols=1}
+    arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],plotsList[[4]],ncol=ncols)
   }
 }
 
