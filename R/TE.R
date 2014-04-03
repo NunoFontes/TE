@@ -1121,7 +1121,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 
 
 te.complex.object = function(ot){
-  plot(1:10,main=paste(to,collapse="."))
+  plot(1:10,main=paste(ot,collapse="."))
 }
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
