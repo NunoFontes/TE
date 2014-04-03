@@ -1076,7 +1076,6 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],plotsList[[4]],ncol=ncols)
   }
 }
-
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   
@@ -1120,6 +1119,10 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   stats
 }
 
+
+te.complex.object = function(to){
+  plot(1:10,main=paste(to,collapse="."))
+}
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
 #historical.matrix = function(c,countries,indicators,d1="2005"){
