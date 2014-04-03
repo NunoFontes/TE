@@ -1121,7 +1121,50 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 
 
 te.complex.object = function(subjects,object){
-  plot(1:10,main=paste(subjects,collapse="."))
+  options(stringsAsFactors = FALSE)
+  howManyLines = length(subjects)
+  dataFrame = list()
+  for(l in 1:howManyLines){
+    if(is.list(subjects[[l]])){
+      action1 = subjects[[l]]$agg
+      innerSubs1 = subjects[[l]]$elements
+      if(is.list(innerSubs)){
+        action2 = innerSubs$agg
+        innerSubs2 = innerSubs$elements
+      }else{
+        tempdf = te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
+        tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+        tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
+        thenames = unique(tempdf$Country)
+        
+        if(! action1=="sum"){action1="sum"}
+        tempdf = aggregate(Close ~ DateTime, data = tempdf, action1)
+        tempdf$Indicator = paste(thenames,collapse = " + ")
+        dataFrame = rbind(dataFrame,tempdf)
+      }
+    }else{
+      tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
+      tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+      tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
+      tempdf$Indicator <- tempdf$Country
+      
+      dataFrame = rbind(dataFrame,tempdf[c("DateTime","Close","Indicator")])
+      
+    }
+  }
+  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
+    geom_line() + 
+    xlab("") + ylab("") +
+    theme(axis.text.y = element_text(), 
+          panel.border=element_blank(),
+          axis.line=element_line(colour = "grey",size=.3),
+          panel.background = element_blank(),
+          panel.grid.minor = element_line(colour = "grey",size=.2),
+          panel.grid.major = element_line(colour = "grey",size=.3)) +
+    theme(legend.position="right") +
+    
+    ggtitle(object) + 
+    theme(plot.title = element_text(face="bold"))
 }
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
