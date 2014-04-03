@@ -1081,6 +1081,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
+  dataMeta=te.get.mat.new(country,indicator)[c("Country","Category","URL")]
   #head(dataFrame)
   if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
   if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -1090,6 +1091,10 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
   dataFrame$Indicator <- sapply(dataFrame, function(x) paste(substr(dataFrame$Country,1,4),dataFrame$Category,sep=" - "))[,1] 
   
+  dataMeta$Country[!is.na(countrycode(dataMeta$Country,"country.name","iso3c"))] <- countrycode(dataMeta$Country,"country.name","iso3c")[!is.na(countrycode(dataMeta$Country,"country.name","iso3c"))]
+  dataMeta$Country[tolower(dataMeta$Country)=="euro area"] <- "EA17"
+  dataMeta$Indicator <- sapply(dataMeta, function(x) paste(substr(dataMeta$Country,1,4),dataMeta$Category,sep=" - "))[,1] 
+  
   theMean = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"mean" )
   theMax = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"max" )
   theMin = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"min" )
@@ -1098,6 +1103,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   theLatest = c()
   trend = c()
   inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
+  dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
     theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
@@ -1109,8 +1115,8 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
     trend = cbind(trend,theLatestFew$coefficients[[2]])
   }
   
-  stats = cbind(t(theLatest),theMean,theMax$x,theMin$x,theSd$x,t(trend))
-  names(stats) <- c("latest","indicator","mean","max","min","sd","trend")
+  stats = cbind(t(theLatest),theMean,theMax$x,theMin$x,theSd$x,t(trend),dataMeta$URL)
+  names(stats) <- c("latest","indicator","mean","max","min","sd","trend","url")
   stats
 }
 
