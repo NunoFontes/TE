@@ -1122,9 +1122,9 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 te.complex.object.test = function(subjects,object){
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects[[1]])
-  if(F){
   dataFrame = list()
   toDebug = howManyLines
+  if(F){
   for(l in 1:howManyLines){
     if(is.list(subjects[[l]])){
       action1 = subjects[[l]]$agg
@@ -1143,7 +1143,7 @@ te.complex.object.test = function(subjects,object){
     }
   }
   }
-  plot(1:20,main=paste(howManyLines))
+  plot(1:25,main=paste(toDebug))
 }
 
 te.complex.object = function(subjects,object){
