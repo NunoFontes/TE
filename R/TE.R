@@ -1119,6 +1119,9 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   stats
 }
 
+te.complex.object.test = function(subjects,object){
+  plot(1:20,main=paste(subjects,collapse=","))
+}
 
 te.complex.object = function(subjects,object){
   options(stringsAsFactors = FALSE)
