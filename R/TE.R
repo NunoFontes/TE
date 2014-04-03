@@ -256,8 +256,8 @@ te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
 }
 #contArray = c("Country","country", ... ) | indArray = c("indicator","indicator", ... )
 te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
-  contArray = unique(contArray)
-  indArray = unique(indArray)
+  contArray = trim(unique(contArray))
+  indArray = trim(unique(indArray))
   if(contArray[1]=="all"){
     country="all"
   }else{
