@@ -1126,7 +1126,7 @@ te.complex.object.test = function(subjects,object){
   toDebug = howManyLines
 
   for(l in 1:howManyLines){
-    toDebug = past(toDebug,is.list(subjects[[l]]),sep=" # ")
+    toDebug = paste(toDebug,is.list(subjects[[l]]),sep=" # ")
     if(F){
       if(is.list(subjects[[l]])){
         action1 = subjects[[l]]$agg
