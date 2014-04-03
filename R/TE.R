@@ -1121,7 +1121,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 
 te.complex.object.test = function(subjects,object){
   options(stringsAsFactors = FALSE)
-  howManyLines = length(subjects)
+  howManyLines = length(subjects[[1]])
   dataFrame = list()
   toDebug = howManyLines
   for(l in 1:howManyLines){
