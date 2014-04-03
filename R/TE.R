@@ -1123,7 +1123,7 @@ te.complex.object.test = function(subjects,object){
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects)
   dataFrame = list()
-  toDebug = ""
+  toDebug = howManyLines
   for(l in 1:howManyLines){
     if(is.list(subjects[[l]])){
       action1 = subjects[[l]]$agg
@@ -1138,7 +1138,7 @@ te.complex.object.test = function(subjects,object){
     }else{
       print(l)
       #tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
-      paste(toDebug,paste(subjects[[l]],collapse=" WWW "),sep=".")
+      toDebug = paste(toDebug,paste(subjects[[l]],collapse=" x "),sep="WWW")
     }
   }
   plot(1:20,main=toDebug)
