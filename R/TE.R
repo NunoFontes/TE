@@ -1151,6 +1151,7 @@ te.complex.object.test = function(subjects,object){
 }
 
 te.complex.object = function(subjects,object){
+  subjects = subjects[[1]]
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects)
   dataFrame = list()
