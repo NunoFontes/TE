@@ -1120,7 +1120,28 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 }
 
 te.complex.object.test = function(subjects,object){
-  plot(1:20,main=paste(subjects,collapse=","))
+  options(stringsAsFactors = FALSE)
+  howManyLines = length(subjects)
+  dataFrame = list()
+  toDebug = ""
+  for(l in 1:howManyLines){
+    if(is.list(subjects[[l]])){
+      action1 = subjects[[l]]$agg
+      innerSubs1 = subjects[[l]]$elements
+      if(is.list(innerSubs1)){
+        action2 = innerSubs1$agg
+        innerSubs2 = innerSubs1$elements
+      }else{
+        #tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
+        toDebug = paste(toDebug,paste(innerSubs1,collapse=" c "),sep=".")
+      }
+    }else{
+      print(l)
+      #tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
+      paste(toDebug,paste(subjects[[l]],collapse=" WWW "),sep=".")
+    }
+  }
+  plot(1:20,main=toDebug)
 }
 
 te.complex.object = function(subjects,object){
@@ -1135,11 +1156,10 @@ te.complex.object = function(subjects,object){
         action2 = innerSubs1$agg
         innerSubs2 = innerSubs1$elements
       }else{
-        tempdf = te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
+        tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
         tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
         tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
         thenames = unique(tempdf$Country)
-        
         if(! action1=="sum"){action1="sum"}
         tempdf = aggregate(Close ~ DateTime, data = tempdf, action1)
         tempdf$Indicator = paste(thenames,collapse = " + ")
@@ -1150,9 +1170,7 @@ te.complex.object = function(subjects,object){
       tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
       tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
       tempdf$Indicator <- tempdf$Country
-      
       dataFrame = rbind(dataFrame,tempdf[c("DateTime","Close","Indicator")])
-      
     }
   }
   ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
