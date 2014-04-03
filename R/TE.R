@@ -1124,26 +1124,28 @@ te.complex.object.test = function(subjects,object){
   howManyLines = length(subjects[[1]])
   dataFrame = list()
   toDebug = howManyLines
-  if(F){
+
   for(l in 1:howManyLines){
-    if(is.list(subjects[[l]])){
-      action1 = subjects[[l]]$agg
-      innerSubs1 = subjects[[l]]$elements
-      if(is.list(innerSubs1)){
-        action2 = innerSubs1$agg
-        innerSubs2 = innerSubs1$elements
+    toDebug = past(toDebug,is.list(subjects[[l]]),sep=" # ")
+    if(F){
+      if(is.list(subjects[[l]])){
+        action1 = subjects[[l]]$agg
+        innerSubs1 = subjects[[l]]$elements
+        if(is.list(innerSubs1)){
+          action2 = innerSubs1$agg
+          innerSubs2 = innerSubs1$elements
+        }else{
+          #tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
+          toDebug = paste(toDebug,paste(innerSubs1,collapse=" c "),sep=".")
+        }
       }else{
-        #tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
-        toDebug = paste(toDebug,paste(innerSubs1,collapse=" c "),sep=".")
+        print(l)
+        #tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
+        toDebug = paste(toDebug,paste(subjects[[l]],collapse=" x "),sep="WWW")
       }
-    }else{
-      print(l)
-      #tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
-      toDebug = paste(toDebug,paste(subjects[[l]],collapse=" x "),sep="WWW")
     }
   }
-  }
-  plot(1:25,main=paste(toDebug))
+  plot(1:30,main=paste(toDebug))
 }
 
 te.complex.object = function(subjects,object){
