@@ -1110,7 +1110,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
     LatestArray = head(temp[order(temp$DateTime, decreasing = T),],3)$Close
     vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],3)$Close):1
     group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
-    weight <- c(vanillaArray,LatestArray)
+    weight <- c(LatestArray,vanillaArray)
     theLatestFew = lm(weight~group)
     trend = cbind(trend,theLatestFew$coefficients[[2]])
   }
