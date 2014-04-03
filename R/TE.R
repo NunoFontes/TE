@@ -1128,9 +1128,9 @@ te.complex.object = function(subjects,object){
     if(is.list(subjects[[l]])){
       action1 = subjects[[l]]$agg
       innerSubs1 = subjects[[l]]$elements
-      if(is.list(innerSubs)){
-        action2 = innerSubs$agg
-        innerSubs2 = innerSubs$elements
+      if(is.list(innerSubs1)){
+        action2 = innerSubs1$agg
+        innerSubs2 = innerSubs1$elements
       }else{
         tempdf = te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
         tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
