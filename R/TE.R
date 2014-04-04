@@ -52,6 +52,8 @@ options(stringsAsFactors = FALSE)
 #all$region[!is.na(countrycode(all$region,"country.name","iso3c"))] <- countrycode(all$region,"country.name","iso3c")[!is.na(countrycode(all$region,"country.name","iso3c"))]
 countrycode_data=countrycode_data;
 
+GROUPS_OF_COUNTRIES = c('Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Euro Area','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
+
 comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confidence","Current Account","Exports","Imports","Consumer Price Index (CPI)","Consumer Spending","Core Consumer Prices","Currency","Exchange Rate","External Debt","Foreign Bond Investment","Foreign Direct Investment","Harmonised Consumer Prices","Household Spending","Housing Index","Stock Market")
 #d=te.countries(c,"G200")
 #nr<-countrycode(d,"country.name","iso3c")
@@ -1119,20 +1121,80 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   stats
 }
 
+te.group.of.countries = function(with,without=NULL){
+  with=trim(tolower(with))
+  without=c(trim(tolower(without)),"euro area")
+
+  url = paste(te.connect.new(), "/matrix/?f=csv",sep=""); #print(url);
+  df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
+  if(is.null(df$Country)){return (NULL)}
+  
+  countriesWith = df$Country[tolower(df$Continent)==with]
+  setdiff(tolower(countriesWith), without)
+}
+
 te.complex.object.test = function(subjects,object){
-  subjects = strsplit(subjects,"VS")[[1]]
+  SINCE = "1999"
   options(stringsAsFactors = FALSE)
+  subjects = "Europe_-_France-Germany_+_Russia_#_Portugal_+_Italy_#_Germany_+_France_"
+  subjects = gsub("_", "", subjects)
+  subjects = strsplit(subjects,"\\#")[[1]]
+  
   howManyLines = length(subjects)
   dataFrame = list()
 
+  toDebug = ""
   for(l in 1:howManyLines){
-    tempSubjects = strsplit(subjects[l],"+")[[1]]
-    toDebug = paste(tempSubjects,' add ',sep="|")
+    provisionaldf = list()
+    tempSubjects = strsplit(subjects[l],"\\+")[[1]]
+      for(t in 1:length(tempSubjects)){
+        tempdf = list()
+        if(grepl("\\-",tempSubjects[t])){
+          with = strsplit(tempSubjects,"\\-")[[1]][1]
+          without = strsplit(tempSubjects,"\\-")[[1]][2:length(strsplit(tempSubjects,"\\-")[[1]])]
+          if(is.na(match(tolower(with),tolower(GROUPS_OF_COUNTRIES)))){
+            tempdf=te.get.hist.multi.free.new(with,object,d1=SINCE)
+            tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+            tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
+            tempdf$Indicator = tempdf$Country
+            provisionaldf = rbind(provisionaldf,tempdf)
+          }else{
+            withLogic = te.group.of.countries(with,without)
+            tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, sum)
+            tempdf$Indicator = paste(with,paste(countrycode(without,"country.name","iso3c")[!is.na(countrycode(without,"country.name","iso3c"))],collapse=" & "),sep=" - ")
+            tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+            provisionaldf = rbind(provisionaldf,tempdf)
+          }
+        }else{
+          tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
+          tempdf$Indicator = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+          tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+          provisionaldf = rbind(provisionaldf,tempdf[c("DateTime","Close","Indicator")])
+          thenames = unique(provisionaldf$Indicator)
+          provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
+          provisionaldf$Indicator = paste(thenames,collapse = " + ")
+        }
+    }
+    thenames = unique(provisionaldf$Indicator)
+    provisionaldf = aggregate(Close ~ DateTime, data = tempdf, sum)
+    provisionaldf$Indicator = paste(thenames,collapse = " + ")
+    dataFrame = rbind(dataFrame,provisionaldf)
   }
   
-  #toDebug=paste(subjects,collapse="#")
-  plot(1:30,main=paste(toDebug,howManyLines,object,sep="&"))
-  #plot(1:30,main=paste(toDebug))
+  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
+    geom_line() + 
+    xlab("") + ylab("") +
+    theme(axis.text.y = element_text(), 
+          panel.border=element_blank(),
+          axis.line=element_line(colour = "grey",size=.3),
+          panel.background = element_blank(),
+          panel.grid.minor = element_line(colour = "grey",size=.2),
+          panel.grid.major = element_line(colour = "grey",size=.3)) +
+    theme(legend.position="right") +
+    
+    ggtitle(object) + 
+    theme(plot.title = element_text(face="bold"))
 }
 
 te.complex.object = function(subjects,object){
