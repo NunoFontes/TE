@@ -1153,7 +1153,7 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
-  #subjects = "Germany_#_Portugal_+_Greece_+_Italy_+_Spain_+_France_"
+  subjects = "Portugal_+_Italy_+_Greece_+_Spain_#_Germany_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
@@ -1161,6 +1161,9 @@ te.complex.object.test = function(subjects,object){
   dataFrame = list()
 
   toDebug = ""
+  
+  theAction = "mean"
+  
   for(l in 1:howManyLines){
     provisionaldf = list()
     tempSubjects = strsplit(subjects[l],"\\+")[[1]]
@@ -1171,44 +1174,102 @@ te.complex.object.test = function(subjects,object){
           without = strsplit(tempSubjects,"\\-")[[1]][2:length(strsplit(tempSubjects,"\\-")[[1]])]
           if(is.na(match(tolower(with),tolower(GROUPS_OF_COUNTRIES)))){
             tempdf=te.get.hist.multi.free.new(with,object,d1=SINCE)
+            if(length(tempdf$Close)<1) next;
             tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
             tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
             tempdf$Indicator = tempdf$Country
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+            
+            tempIndicator = tempdf$Indicator[1]
+            
+            tempdf = zoo(tempdf$Close,tempdf$DateTime)
+            tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+            
+            tempTempdf=list()
+            tempTempdf$Close = coredata(tempdf)
+            tempTempdf$DateTime = as.yearmon(time(tempdf))
+            tempTempdf$Indicator = tempIndicator      
+            tempdf = data.frame(tempTempdf)
+            
+            
             provisionaldf = rbind(provisionaldf,tempdf)
           }else{
             withLogic = te.group.of.countries(with,without)
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
-            tempdf = aggregate(Close ~ DateTime, data = tempdf, sum)
+            if(length(tempdf$Close)<1) next;
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
             tempdf$Indicator = paste(with,paste(countrycode(without,"country.name","iso3c")[!is.na(countrycode(without,"country.name","iso3c"))],collapse=" & "),sep=" - ")
             tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+            
+            tempIndicator = tempdf$Indicator[1]
+            
+            tempdf = zoo(tempdf$Close,tempdf$DateTime)
+            tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+            
+            tempTempdf=list()
+            tempTempdf$Close = coredata(tempdf)
+            tempTempdf$DateTime = as.yearmon(time(tempdf))
+            tempTempdf$Indicator = tempIndicator      
+            tempdf = data.frame(tempTempdf)
+            
             provisionaldf = rbind(provisionaldf,tempdf)
           }
         }else{
           if(is.na(match(tolower(tempSubjects[t]),tolower(GROUPS_OF_COUNTRIES)))){
             tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
+            if(length(tempdf$Close)<1) next;
             tempdf$Indicator[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
             tempdf$Indicator[tolower(tempdf$Country)=="euro area"] <- "EA17"
             tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)     
+            
+            tempIndicator = tempdf$Indicator[1]
+            
+            tempdf = zoo(tempdf$Close,tempdf$DateTime)
+            tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+            
+            tempTempdf=list()
+            tempTempdf$Close = coredata(tempdf)
+            tempTempdf$DateTime = as.yearmon(time(tempdf))
+            tempTempdf$Indicator = tempIndicator      
+            tempdf = data.frame(tempTempdf)
+            
             provisionaldf = rbind(provisionaldf,tempdf[c("DateTime","Close","Indicator")])
             thenames = unique(provisionaldf$Indicator)
-            provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
+            provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
             provisionaldf$Indicator = paste(thenames,collapse = " + ")
           }else{
             withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
-            tempdf = aggregate(Close ~ DateTime, data = tempdf, sum)
+            if(length(tempdf$Close)<1) next;
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
             tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+            
+            tempIndicator = tempdf$Indicator[1]
+            
+            tempdf = zoo(tempdf$Close,tempdf$DateTime)
+            tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+            
+            tempTempdf=list()
+            tempTempdf$Close = coredata(tempdf)
+            tempTempdf$DateTime = as.yearmon(time(tempdf))
+            tempTempdf$Indicator = tempIndicator      
+            tempdf = data.frame(tempTempdf)
+            
             provisionaldf = rbind(provisionaldf,tempdf)
+          
           }
         }
     }
     thenames = unique(provisionaldf$Indicator)
-    provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
+    provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
     provisionaldf$Indicator = paste(thenames,collapse = " + ")
     dataFrame = rbind(dataFrame,provisionaldf)
   }
   
-  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
+  ggplot(dataFrame,aes(x=as.Date(DateTime), y=Close, colour=Indicator)) + 
     geom_line() + 
     xlab("") + ylab("") +
     theme(axis.text.y = element_text(), 
