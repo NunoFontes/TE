@@ -1136,7 +1136,6 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
-  subjects = "Europe_-_France-Germany_+_Russia_#_Portugal_+_Italy_#_Germany_+_France_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
