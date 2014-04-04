@@ -1134,7 +1134,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   }
   
   stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)),data.frame(dataMeta$URL))
-  names(stats) <- c("latest","indicator","avg","high","low","high_d","min_d","trend","url")
+  names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
   stats
 }
 
