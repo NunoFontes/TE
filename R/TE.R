@@ -1120,7 +1120,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 }
 
 te.complex.object.test = function(subjects,object){
-  #subjects = subjects[[1]]
+  subjects = subjects[[1]]
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects)
   dataFrame = list()
