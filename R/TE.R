@@ -1124,14 +1124,13 @@ te.complex.object.test = function(subjects,object){
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects)
   dataFrame = list()
-  toDebug = howManyLines
 
-  
-  
   for(l in 1:howManyLines){
-    
+    tempSubjects = strsplit(subjects[l],"+")[[1]]
+    toDebug = paste(tempSubjects,' add ',sep="|")
   }
-  toDebug=paste(subjects,collapse="#")
+  
+  #toDebug=paste(subjects,collapse="#")
   plot(1:30,main=paste(toDebug,howManyLines,object,sep="&"))
   #plot(1:30,main=paste(toDebug))
 }
