@@ -1136,7 +1136,7 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
- # subjects = "Euro Area_#_Germany_#_Portugal_+_Greece_+_Italy_+_China_"
+  subjects = "Germany_#_Portugal_+_Greece_+_Italy_+_Spain_+_France_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
@@ -1186,7 +1186,7 @@ te.complex.object.test = function(subjects,object){
         }
     }
     thenames = unique(provisionaldf$Indicator)
-    provisionaldf = aggregate(Close ~ DateTime, data = tempdf, sum)
+    provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
     provisionaldf$Indicator = paste(thenames,collapse = " + ")
     dataFrame = rbind(dataFrame,provisionaldf)
   }
