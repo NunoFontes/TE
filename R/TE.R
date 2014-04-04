@@ -1136,6 +1136,7 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
+  subjects = "United States_#_Europe_-_France_#_Europe_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
@@ -1166,13 +1167,21 @@ te.complex.object.test = function(subjects,object){
             provisionaldf = rbind(provisionaldf,tempdf)
           }
         }else{
-          tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
-          tempdf$Indicator = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
-          tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
-          provisionaldf = rbind(provisionaldf,tempdf[c("DateTime","Close","Indicator")])
-          thenames = unique(provisionaldf$Indicator)
-          provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
-          provisionaldf$Indicator = paste(thenames,collapse = " + ")
+          if(is.na(match(tolower(tempSubjects[t]),tolower(GROUPS_OF_COUNTRIES)))){
+            tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
+            tempdf$Indicator = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+            tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+            provisionaldf = rbind(provisionaldf,tempdf[c("DateTime","Close","Indicator")])
+            thenames = unique(provisionaldf$Indicator)
+            provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, sum)
+            provisionaldf$Indicator = paste(thenames,collapse = " + ")
+          }else{
+            withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
+            tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, sum)
+            tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
+            provisionaldf = rbind(provisionaldf,tempdf)
+          }
         }
     }
     thenames = unique(provisionaldf$Indicator)
