@@ -1120,7 +1120,6 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
 }
 
 te.complex.object.test = function(subjects,object){
-  subjects = subjects[[1]]
   options(stringsAsFactors = FALSE)
   howManyLines = length(subjects)
   dataFrame = list()
@@ -1146,7 +1145,7 @@ te.complex.object.test = function(subjects,object){
       }
     }
   }
-  toDebug=paste(subjects[[1]],collapse="#")
+  toDebug=paste(subjects,collapse="#")
   plot(1:30,main=paste(toDebug,howManyLines,sep="&"))
   #plot(1:30,main=paste(toDebug))
 }
