@@ -1153,7 +1153,7 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
-  #subjects = "Portugal_+_Italy_+_Greece_+_Spain_#_Germany_"
+  subjects = "United States_#_Europe_-_Germany_#_Europe_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
@@ -1162,7 +1162,7 @@ te.complex.object.test = function(subjects,object){
 
   toDebug = ""
   
-  theAction = "mean"
+  if(grepl("rate",tolower(object))){theAction = "mean"}else{theAction="sum"}
   
   for(l in 1:howManyLines){
     provisionaldf = list()
@@ -1197,13 +1197,15 @@ te.complex.object.test = function(subjects,object){
             withLogic = te.group.of.countries(with,without)
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
             if(length(tempdf$Close)<1) next;
-            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
+            
             tempdf$Indicator = paste(with,paste(countrycode(without,"country.name","iso3c")[!is.na(countrycode(without,"country.name","iso3c"))],collapse=" & "),sep=" - ")
             tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
-            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
-            
             tempIndicator = tempdf$Indicator[1]
             
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
+                        
             tempdf = zoo(tempdf$Close,tempdf$DateTime)
             tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
             
@@ -1222,9 +1224,9 @@ te.complex.object.test = function(subjects,object){
             tempdf$Indicator[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
             tempdf$Indicator[tolower(tempdf$Country)=="euro area"] <- "EA17"
             tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
-            tempdf$DateTime <- as.yearmon(tempdf$DateTime)     
-            
             tempIndicator = tempdf$Indicator[1]
+            
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)     
             
             tempdf = zoo(tempdf$Close,tempdf$DateTime)
             tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
@@ -1243,11 +1245,12 @@ te.complex.object.test = function(subjects,object){
             withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
             if(length(tempdf$Close)<1) next;
-            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
-            tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
-            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
             
+            tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
             tempIndicator = tempdf$Indicator[1]
+            tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+            tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
+            
             
             tempdf = zoo(tempdf$Close,tempdf$DateTime)
             tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
