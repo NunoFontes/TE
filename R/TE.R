@@ -1146,6 +1146,7 @@ te.complex.object.test = function(subjects,object){
       }
     }
   }
+  toDebug=paste(subjects,collapse="#")
   plot(1:30,main=paste(toDebug))
   #plot(1:30,main=paste(toDebug))
 }
