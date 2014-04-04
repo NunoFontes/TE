@@ -1269,7 +1269,9 @@ te.complex.object.test = function(subjects,object){
     dataFrame = rbind(dataFrame,provisionaldf)
   }
   
-  ggplot(dataFrame,aes(x=as.Date(DateTime), y=Close, colour=Indicator)) + 
+  dataFrame$DateTime <- as.Date(dataFrame$DateTime)
+  
+  ggplot(dataFrame,aes(x=(DateTime), y=Close, colour=Indicator)) + 
     geom_line() + 
     xlab("") + ylab("") +
     theme(axis.text.y = element_text(), 
