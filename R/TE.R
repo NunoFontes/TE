@@ -1126,28 +1126,13 @@ te.complex.object.test = function(subjects,object){
   dataFrame = list()
   toDebug = howManyLines
 
+  
+  
   for(l in 1:howManyLines){
-    toDebug = paste(toDebug,is.list(subjects[[l]]),sep=" % ")
-    if(F){
-      if(is.list(subjects[[l]])){
-        action1 = subjects[[l]]$agg
-        innerSubs1 = subjects[[l]]$elements
-        if(is.list(innerSubs1)){
-          action2 = innerSubs1$agg
-          innerSubs2 = innerSubs1$elements
-        }else{
-          #tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
-          toDebug = paste(toDebug,paste(innerSubs1,collapse=" c "),sep=".")
-        }
-      }else{
-        print(l)
-        #tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
-        toDebug = paste(toDebug,paste(subjects[[l]],collapse=" x "),sep="WWW")
-      }
-    }
+    
   }
   toDebug=paste(subjects,collapse="#")
-  plot(1:30,main=paste(toDebug,howManyLines,sep="&"))
+  plot(1:30,main=paste(toDebug,howManyLines,object,sep="&"))
   #plot(1:30,main=paste(toDebug))
 }
 
