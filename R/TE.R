@@ -52,7 +52,7 @@ options(stringsAsFactors = FALSE)
 #all$region[!is.na(countrycode(all$region,"country.name","iso3c"))] <- countrycode(all$region,"country.name","iso3c")[!is.na(countrycode(all$region,"country.name","iso3c"))]
 countrycode_data=countrycode_data;
 
-GROUPS_OF_COUNTRIES = c('Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Euro Area','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
+GROUPS_OF_COUNTRIES = c('Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
 
 comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confidence","Current Account","Exports","Imports","Consumer Price Index (CPI)","Consumer Spending","Core Consumer Prices","Currency","Exchange Rate","External Debt","Foreign Bond Investment","Foreign Direct Investment","Harmonised Consumer Prices","Household Spending","Housing Index","Stock Market")
 #d=te.countries(c,"G200")
@@ -1136,7 +1136,7 @@ te.group.of.countries = function(with,without=NULL){
 te.complex.object.test = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
-  #subjects = "United States_#_Europe_-_France_#_Europe_"
+  subjects = "Euro Area_#_Germany_#_Portugal_+_Greece_+_Italy_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
   
