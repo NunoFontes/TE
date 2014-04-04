@@ -1126,10 +1126,10 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
     mx = temp[which.max(temp)]
     mn = temp[which.min(temp)]
     
-    theMean = c(theMean,mean(temp))
-    theMax = c(theMax,coredata(mx))
+    theMean = c(theMean,round(mean(temp),2))
+    theMax = c(theMax,round(coredata(mx),2))
     theMaxDate = c(theMaxDate,as.character(time(mx)))
-    theMin = c(theMin,coredata(mn) )
+    theMin = c(theMin,round(coredata(mn),2))
     theMinDate = c(theMinDate,as.character(time(mn)))
   }
   
