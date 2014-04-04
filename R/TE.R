@@ -1096,28 +1096,46 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   dataMeta$Country[tolower(dataMeta$Country)=="euro area"] <- "EA17"
   dataMeta$Indicator <- sapply(dataMeta, function(x) paste(substr(dataMeta$Country,1,4),dataMeta$Category,sep=" - "))[,1] 
   
-  theMean = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"mean" )
-  theMax = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"max" )
-  theMin = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"min" )
-  theSd = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"sd" )
+  #theMean = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"mean" )
+  #theMax = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"max" )
+  #theMin = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"min" )
+  #theSd = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"sd" )
     
   theLatest = c()
+  theMean = c()
+  theMax = c()
+  theMaxDate = c()
+  theMin = c()
+  theMinDate = c()
+  
   trend = c()
   inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
   dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
-    theLatest = cbind(theLatest,head(temp[order(temp$DateTime, decreasing = T),],1)$Close)
+    theLatest = cbind(theLatest,as.numeric(head(temp[order(temp$DateTime, decreasing = T),],1)$Close))
+    
     LatestArray = head(temp[order(temp$DateTime, decreasing = T),],3)$Close
     vanillaArray = length(head(temp[order(temp$DateTime, decreasing = T),],3)$Close):1
     group <- gl(2, length(vanillaArray), 2*length(vanillaArray), labels = c("LatestArray","vanillaArray"))
     weight <- c(LatestArray,vanillaArray)
     theLatestFew = lm(weight~group)
     trend = cbind(trend,theLatestFew$coefficients[[2]])
+    
+    temp = zoo(temp$Close,temp$DateTime)
+    
+    mx = temp[which.max(temp)]
+    mn = temp[which.min(temp)]
+    
+    theMean = c(theMean,mean(temp))
+    theMax = c(theMax,coredata(mx))
+    theMaxDate = c(theMaxDate,as.character(time(mx)))
+    theMin = c(theMin,coredata(mn) )
+    theMinDate = c(theMinDate,as.character(time(mn)))
   }
   
-  stats = cbind(t(theLatest),theMean,theMax$x,theMin$x,theSd$x,t(trend),dataMeta$URL)
-  names(stats) <- c("latest","indicator","mean","max","min","sd","trend","url")
+  stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)),data.frame(dataMeta$URL))
+  names(stats) <- c("latest","indicator","avg","high","low","high_d","min_d","trend","url")
   stats
 }
 
