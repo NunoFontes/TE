@@ -1269,7 +1269,6 @@ te.stats.analysis.object = function(subjects,object){
   
   trend = c()
   inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
-  dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
     theLatest = cbind(theLatest,as.numeric(head(temp[order(temp$DateTime, decreasing = T),],1)$Close))
@@ -1295,7 +1294,6 @@ te.stats.analysis.object = function(subjects,object){
   stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)))
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend")
   stats
-  
 
 }
 
