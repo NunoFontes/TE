@@ -508,7 +508,8 @@ te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
 te.plot.compare=function(c,country,indicator,d1="NULL",opts=NULL){
   #df=data.frame()
   #assign("df",historicalToMatrix(c,country,indicator), envir = environment())
-  
+  if(length(country)==1) country = c(country,"United States","United Kingdom","Germany","India")
+  if(length(indicator)==1) indicator = c(country,"Population")
   df=data.frame()
   assign("df",historicalToMatrix.new(c,country,indicator), envir = environment())
   
@@ -986,7 +987,7 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  
+  theTitle=""
   #df=te.get.hist.multi.free(c,country,indicator,d1="2012")
   if(length(country)>9){indicator = indicator[1]; if(!is.null(opts$title) && opts$title){theTitle=indicator}else{theTitle=""}}
   if(length(indicator)>9){country = country[1]; if(!is.null(opts$title) && opts$title){theTitle=country}else{theTitle=""}}
