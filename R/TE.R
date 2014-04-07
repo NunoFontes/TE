@@ -1138,6 +1138,167 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   stats
 }
 
+te.stats.analysis.object = function(subjects,object){
+  SINCE = "1999"
+  options(stringsAsFactors = FALSE)
+  #subjects = "United States_#_Europe_-_Germany_#_Europe_"
+  subjects = gsub("_", "", subjects)
+  subjects = strsplit(subjects,"\\#")[[1]]
+  
+  howManyLines = length(subjects)
+  dataFrame = list()
+  
+  toDebug = ""
+  
+  if(grepl("rate",tolower(object))){theAction = "mean"}else{theAction="sum"}
+  
+  for(l in 1:howManyLines){
+    provisionaldf = list()
+    tempSubjects = strsplit(subjects[l],"\\+")[[1]]
+    for(t in 1:length(tempSubjects)){
+      tempdf = list()
+      if(grepl("\\-",tempSubjects[t])){
+        with = strsplit(tempSubjects,"\\-")[[1]][1]
+        without = strsplit(tempSubjects,"\\-")[[1]][2:length(strsplit(tempSubjects,"\\-")[[1]])]
+        if(is.na(match(tolower(with),tolower(GROUPS_OF_COUNTRIES)))){
+          tempdf=te.get.hist.multi.free.new(with,object,d1=SINCE)
+          if(length(tempdf$Close)<1) next;
+          tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+          tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
+          tempdf$Indicator = tempdf$Country
+          tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+          
+          tempIndicator = tempdf$Indicator[1]
+          
+          tempdf = zoo(tempdf$Close,tempdf$DateTime)
+          tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+          
+          tempTempdf=list()
+          tempTempdf$Close = coredata(tempdf)
+          tempTempdf$DateTime = as.yearmon(time(tempdf))
+          tempTempdf$Indicator = tempIndicator      
+          tempdf = data.frame(tempTempdf)
+          
+          
+          provisionaldf = rbind(provisionaldf,tempdf)
+        }else{
+          withLogic = te.group.of.countries(with,without)
+          tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
+          if(length(tempdf$Close)<1) next;
+          
+          tempdf$Indicator = paste(with,paste(countrycode(without,"country.name","iso3c")[!is.na(countrycode(without,"country.name","iso3c"))],collapse=" & "),sep=" - ")
+          tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+          tempIndicator = tempdf$Indicator[1]
+          
+          tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+          
+          tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
+          
+          tempdf = zoo(tempdf$Close,tempdf$DateTime)
+          tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+          
+          tempTempdf=list()
+          tempTempdf$Close = coredata(tempdf)
+          tempTempdf$DateTime = as.yearmon(time(tempdf))
+          tempTempdf$Indicator = tempIndicator      
+          tempdf = data.frame(tempTempdf)
+          
+          provisionaldf = rbind(provisionaldf,tempdf)
+        }
+      }else{
+        if(is.na(match(tolower(tempSubjects[t]),tolower(GROUPS_OF_COUNTRIES)))){
+          tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
+          if(length(tempdf$Close)<1) next;
+          tempdf$Indicator[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
+          tempdf$Indicator[tolower(tempdf$Country)=="euro area"] <- "EA17"
+          tempdf$Indicator = paste("(",tempdf$Indicator,")", sep = "")
+          tempIndicator = tempdf$Indicator[1]
+          
+          tempdf$DateTime <- as.yearmon(tempdf$DateTime)     
+          
+          tempdf = zoo(tempdf$Close,tempdf$DateTime)
+          tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+          
+          tempTempdf=list()
+          tempTempdf$Close = coredata(tempdf)
+          tempTempdf$DateTime = as.yearmon(time(tempdf))
+          tempTempdf$Indicator = tempIndicator      
+          tempdf = data.frame(tempTempdf)
+          
+          provisionaldf = rbind(provisionaldf,tempdf[c("DateTime","Close","Indicator")])
+          thenames = unique(provisionaldf$Indicator)
+          provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
+          provisionaldf$Indicator = paste(thenames,collapse = " + ")
+        }else{
+          withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
+          tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
+          if(length(tempdf$Close)<1) next;
+          
+          tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
+          tempIndicator = tempdf$Indicator[1]
+          tempdf$DateTime <- as.yearmon(tempdf$DateTime)
+          tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
+          
+          
+          tempdf = zoo(tempdf$Close,tempdf$DateTime)
+          tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
+          
+          tempTempdf=list()
+          tempTempdf$Close = coredata(tempdf)
+          tempTempdf$DateTime = as.yearmon(time(tempdf))
+          tempTempdf$Indicator = tempIndicator      
+          tempdf = data.frame(tempTempdf)
+          
+          provisionaldf = rbind(provisionaldf,tempdf)
+          
+        }
+      }
+    }
+    thenames = unique(provisionaldf$Indicator)
+    provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
+    provisionaldf$Indicator = paste(thenames,collapse = " + ")
+    dataFrame = rbind(dataFrame,provisionaldf)
+  } 
+  
+  theLatest = c()
+  theMean = c()
+  theMax = c()
+  theMaxDate = c()
+  theMin = c()
+  theMinDate = c()
+  
+  trend = c()
+  inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
+  dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
+  for(i in 1:length(inStudy)){
+    temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
+    theLatest = cbind(theLatest,as.numeric(head(temp[order(temp$DateTime, decreasing = T),],1)$Close))
+    
+    LatestArray = head(temp[order(temp$DateTime, decreasing = T),],4)
+    LatestArray = LatestArray[order(LatestArray$DateTime, decreasing = F),]$Close
+    vanillaArray = 1:length(head(temp[order(temp$DateTime, decreasing = T),],4)$Close)
+    
+    trend = cbind(trend,lm(LatestArray ~ vanillaArray)$coefficients[[2]])
+    
+    temp = zoo(temp$Close,temp$DateTime)
+    
+    mx = temp[which.max(temp)]
+    mn = temp[which.min(temp)]
+    
+    theMean = c(theMean,round(mean(temp),2))
+    theMax = c(theMax,round(coredata(mx),2))
+    theMaxDate = c(theMaxDate,as.character(time(mx)))
+    theMin = c(theMin,round(coredata(mn),2))
+    theMinDate = c(theMinDate,as.character(time(mn)))
+  }
+  
+  stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)),data.frame(dataMeta$URL))
+  names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
+  stats
+  
+
+}
+
 te.group.of.countries = function(with,without=NULL){
   with=trim(tolower(with))
   without=c(trim(tolower(without)),"euro area")
@@ -1150,7 +1311,7 @@ te.group.of.countries = function(with,without=NULL){
   setdiff(tolower(countriesWith), without)
 }
 
-te.complex.object.test = function(subjects,object){
+te.plot.object = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
   #subjects = "United States_#_Europe_-_Germany_#_Europe_"
@@ -1289,50 +1450,7 @@ te.complex.object.test = function(subjects,object){
     theme(plot.title = element_text(face="bold"))
 }
 
-te.complex.object = function(subjects,object){
-  subjects = subjects[[1]]
-  options(stringsAsFactors = FALSE)
-  howManyLines = length(subjects)
-  dataFrame = list()
-  for(l in 1:howManyLines){
-    if(is.list(subjects[[l]])){
-      action1 = subjects[[l]]$agg
-      innerSubs1 = subjects[[l]]$elements
-      if(is.list(innerSubs1)){
-        action2 = innerSubs1$agg
-        innerSubs2 = innerSubs1$elements
-      }else{
-        tempdf=te.get.hist.multi.free.new(innerSubs1,object,d1="1990")
-        tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
-        tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
-        thenames = unique(tempdf$Country)
-        if(! action1=="sum"){action1="sum"}
-        tempdf = aggregate(Close ~ DateTime, data = tempdf, action1)
-        tempdf$Indicator = paste(thenames,collapse = " + ")
-        dataFrame = rbind(dataFrame,tempdf)
-      }
-    }else{
-      tempdf = te.get.hist.multi.free.new(subjects[[l]],object,d1="1990")
-      tempdf$Country[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] <- countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
-      tempdf$Country[tolower(tempdf$Country)=="euro area"] <- "EA17"
-      tempdf$Indicator <- tempdf$Country
-      dataFrame = rbind(dataFrame,tempdf[c("DateTime","Close","Indicator")])
-    }
-  }
-  ggplot(dataFrame,aes(x=DateTime, y=Close, colour=Indicator)) + 
-    geom_line() + 
-    xlab("") + ylab("") +
-    theme(axis.text.y = element_text(), 
-          panel.border=element_blank(),
-          axis.line=element_line(colour = "grey",size=.3),
-          panel.background = element_blank(),
-          panel.grid.minor = element_line(colour = "grey",size=.2),
-          panel.grid.major = element_line(colour = "grey",size=.3)) +
-    theme(legend.position="right") +
-    
-    ggtitle(object) + 
-    theme(plot.title = element_text(face="bold"))
-}
+
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
 #historical.matrix = function(c,countries,indicators,d1="2005"){
