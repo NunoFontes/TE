@@ -1110,6 +1110,10 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   
   trend = c()
   inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
+  
+  dataFrame$DateTime = as.yearmon(dataFrame$DateTime)
+  
+  
   dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
@@ -1132,9 +1136,6 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
     theMin = c(theMin,round(coredata(mn),2))
     theMinDate = c(theMinDate,as.character(time(mn)))
   }
-  
-  theMaxDate = as.yearmon(theMaxDate)
-  theMinDate = as.yearmon(theMinDate)
   
   stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)),data.frame(dataMeta$URL))
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
