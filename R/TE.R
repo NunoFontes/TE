@@ -986,6 +986,7 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
   text(.8, .85, Signif,col=2) 
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
+  
   options(stringsAsFactors = FALSE)
   theTitle=""
   if(length(country)==1) theTitle = country
@@ -1020,6 +1021,9 @@ te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   if(length(na.omit(na.trim(ndf))[,1])<3){stop("Too Little Info. One or more Indicators are sparse in data, re-do selection.")}
   ndf=as.data.frame(na.omit(na.approx(na.trim(ndf[,2:length(names(ndf))]))))
   names(ndf)=names[2:length(names)]
+
+  if(!is.null(opts$title) && opts$title){theTitle=theTitle}else{theTitle=NULL}
+
   pairs(as.data.frame(ndf[,1:length(names(ndf))]),
         lower.panel=panel.smooth, upper.panel=panel.cor,gap=0.1,
         cex=.1,cex.labels=1.2,main=theTitle)
