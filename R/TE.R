@@ -1133,6 +1133,9 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
     theMinDate = c(theMinDate,as.character(time(mn)))
   }
   
+  theMaxDate = as.yearmon(theMaxDate)
+  theMinDate = as.yearmon(theMinDate)
+  
   stats = cbind(data.frame(t(theLatest)),data.frame(inStudy),data.frame(theMean),data.frame(theMax),data.frame(theMin),data.frame(theMaxDate),data.frame(theMinDate),data.frame(t(trend)),data.frame(dataMeta$URL))
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
   stats
