@@ -212,10 +212,16 @@ te.get.mat.new=function(contArray,indArray){
         indicator2=paste(indicator2,indArray[i],sep=",")
       }
     }
-    df1=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]],d1)
-    df2=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]],d1)
-    df3=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]],d1)
-    df4=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]],d1)
+    #df1=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]],d1)
+    #df2=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+    #df3=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]],d1)
+    #df4=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]],d1)
+    
+    df1=te.get.mat.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]])
+    df2=te.get.mat.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]])
+    df3=te.get.mat.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]])
+    df4=te.get.mat.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]])
+    
     df = rbind(df1,df2,df3,df4)
     df
   }else{
@@ -240,7 +246,7 @@ te.get.mat.mat.new=function(contArray){
   if(is.null(df$Country)){return (NULL)}
   df
 }
-te.get.hist.new=function(country,indicator,d1="2005-01-01"){
+te.get.hist.new=function(country,indicator,d1="2005"){
   url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
   df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
   if(is.null(df$DateTime)){return (NULL)}
@@ -256,9 +262,13 @@ te.get.hist.multi.new=function(reqArray,d1="2005-01-01"){
   dataFrame
 }
 #contArray = c("Country","country", ... ) | indArray = c("indicator","indicator", ... )
-te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
+te.get.hist.multi.free.new=function(contArray,indArray,d1="2005"){
+  options(stringsAsFactors = FALSE)
+  
   contArray = trim(unique(contArray))
+  #print(contArray)
   indArray = trim(unique(indArray))
+  #print(indArray)
   if(contArray[1]=="all"){
     country="all"
   }else{
@@ -277,7 +287,7 @@ te.get.hist.multi.free.new=function(contArray,indArray,d1="2005-01-01"){
   }
 url = paste(te.connect.new(), "/historical/country/",URLencode(country),"/indicator/",URLencode(indicator),"/",d1,"?f=csv",sep=""); #print(url);
 #print(nchar(url))
-if(nchar(url)>310){
+if(nchar(url)>300){
   if(contArray[1]=="all"){
     country1="all"
     country2="all"
@@ -317,6 +327,7 @@ if(nchar(url)>310){
   df = rbind(df1,df2,df3,df4)
   df
 }else{
+#print(url)
 df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
 if(is.null(df$DateTime)){return (NULL)}
 df$DateTime=as.Date(df$DateTime,"%m/%d/%Y")
@@ -1087,7 +1098,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
 
 te.stats = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
-  d1=d1
+  d1="1950"
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     #te.stats.analysis(c,country,indicator,d1,opts)
   }else{
@@ -1099,7 +1110,7 @@ te.stats = function(c,country,indicator,d1="1950",opts=NULL){
 
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
-  
+  #d1="2010"
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   dataMeta=te.get.mat.new(country,indicator)[c("Country","Category","URL")]
   #head(dataFrame)
@@ -1134,10 +1145,12 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   
   trend = c()
   inStudy = unique(dataFrame$Indicator[order(dataFrame$Indicator,decreasing=F)])
-  
+  length(inStudy)
   dataFrame$DateTime = as.yearmon(dataFrame$DateTime)
   
-  
+  dataMeta = dataMeta[dataMeta$Indicator %in% inStudy,]
+  dataFrame = dataFrame[dataFrame$Indicator %in% unique(dataMeta$Indicator),]
+  dataMeta = unique(dataMeta)
   dataMeta = dataMeta[order(dataMeta$Indicator,decreasing=F),]
   for(i in 1:length(inStudy)){
     temp = (dataFrame[dataFrame$Indicator == inStudy[i],])
@@ -1342,7 +1355,7 @@ te.group.of.countries = function(with,without=NULL){
            countriesWith = head(countriesWith$Country[order(countriesWith$GDP,decreasing=T)],TOP)},
     opec={countriesWith=c("Algeria","Angola","Ecuador","Iran","Iraq","Kuwait","Libya","Nigeria","Qatar","Saudi Arabia","United Arab Emirates","Venezuela")},
     bric={countriesWith=c("Russia","Brazil","India","China")},
-    brics={countriesWith=c("Russia","Brazil","India","China")},
+    brics={countriesWith=c("Russia","Brazil","India","China","South Africa")},
   {countriesWith = (df[tolower(df$Continent) %in% tolower(with),])
    countriesWith = head(countriesWith$Country[order(countriesWith$GDP,decreasing=T)],TOP)}
   )
