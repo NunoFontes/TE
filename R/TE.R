@@ -52,7 +52,7 @@ options(stringsAsFactors = FALSE)
 #all$region[!is.na(countrycode(all$region,"country.name","iso3c"))] <- countrycode(all$region,"country.name","iso3c")[!is.na(countrycode(all$region,"country.name","iso3c"))]
 countrycode_data=countrycode_data;
 
-GROUPS_OF_COUNTRIES = c('World','Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
+GROUPS_OF_COUNTRIES = c('World','Africa','America','Asia','Australia','BRIC','BRICS','Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
 
 comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confidence","Current Account","Exports","Imports","Consumer Price Index (CPI)","Consumer Spending","Core Consumer Prices","Currency","Exchange Rate","External Debt","Foreign Bond Investment","Foreign Direct Investment","Harmonised Consumer Prices","Household Spending","Housing Index","Stock Market")
 #d=te.countries(c,"G200")
@@ -63,7 +63,6 @@ comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confiden
 #EUROPE=c("Albania","Andorra","Austria","Belarus","Belgium","Bosnia and Herzegovina","Bulgaria","Channel Islands","Croatia","Cyprus","Czech Republic","Denmark","Estonia","Euro area","Faeroe Islands","Finland","France","Germany","Greece","Hungary","Iceland","Ireland","Isle of Man","Italy","Kosovo","Latvia","Liechtenstein","Lithuania","Luxembourg","Macedonia","Malta","Moldova","Monaco","Montenegro","Netherlands","Norway","Poland","Portugal","Romania","Russia","San Marino","Serbia","Slovakia","Slovenia","Spain","Sweden","Switzerland","Turkey","Ukraine","United Kingdom")
 
 #install.packages("RCurl")
-
 
 #RCURLhttpheader= c(Authorization = "Client 9541a8a3c3ccb5b:3ce8e344216b372")
 #RCURLopts = list(ssl.verifypeer = FALSE)
@@ -1089,8 +1088,9 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
 te.stats = function(c,country,indicator,d1="1950",opts=NULL){
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     te.stats.analysis(c,country,indicator,d1="1950",opts=NULL)
-  }else{te.stats.analysis(7,'Portugal','GDP',d1="1950",opts=NULL)}
-    #te.group.of.countries(tempSubjects[t],"Atlantis")
+  }else{
+    countriesEligible = te.group.of.countries(country,"Atlantis")
+    te.stats.analysis(c,countriesEligible,indicator,d1="1950",opts=NULL)}
 }
 
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
@@ -1322,14 +1322,26 @@ te.stats.analysis.object = function(subjects,object){
 }
 
 te.group.of.countries = function(with,without=NULL){
+  TOP = 50
   with=trim(tolower(with))
   without=c(trim(tolower(without)),"euro area")
-
+  
   url = paste(te.connect.new(), "/matrix/?f=csv",sep=""); #print(url);
   df = read.csv(textConnection(RCURLgetURL(url)), row.names=NULL)
   if(is.null(df$Country)){return (NULL)}
-  
-  countriesWith = df$Country[tolower(df$Continent)==with]
+  ## ACCEPTS: G99 | Continent | EMERGING99 | PLUNGING99 ##
+  #te.countries = function(c,group="G20")
+  switch(
+    with, 
+    world={with = unique(df$Continent)
+           countriesWith = (df[tolower(df$Continent) %in% tolower(with),])
+           countriesWith = head(countriesWith$Country[order(countriesWith$GDP,decreasing=T)],TOP)},
+    opec={countriesWith=c("Algeria","Angola","Ecuador","Iran","Iraq","Kuwait","Libya","Nigeria","Qatar","Saudi Arabia","United Arab Emirates","Venezuela")},
+    bric={countriesWith=c("Russia","Brazil","India","China")},
+    brics={countriesWith=c("Russia","Brazil","India","China")},
+  {countriesWith = (df[tolower(df$Continent) %in% tolower(with),])
+   countriesWith = head(countriesWith$Country[order(countriesWith$GDP,decreasing=T)],TOP)}
+  )
   setdiff(tolower(countriesWith), without)
 }
 
