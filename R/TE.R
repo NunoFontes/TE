@@ -1085,8 +1085,8 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],plotsList[[4]],ncol=ncols)
   }
 }
+
 te.stats = function(c,country,indicator,d1="1950",opts=NULL){
-  
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     te.stats.analysis(c,country,indicator,d1="1950",opts=NULL)
   }else{te.stats.analysis(7,'Portugal','GDP',d1="1950",opts=NULL)}
@@ -1109,7 +1109,12 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   
   dataMeta$Country[!is.na(countrycode(dataMeta$Country,"country.name","iso3c"))] <- countrycode(dataMeta$Country,"country.name","iso3c")[!is.na(countrycode(dataMeta$Country,"country.name","iso3c"))]
   dataMeta$Country[tolower(dataMeta$Country)=="euro area"] <- "EA17"
-  dataMeta$Indicator <- sapply(dataMeta, function(x) paste(substr(dataMeta$Country,1,4),dataMeta$Category,sep=" - "))[,1] 
+  
+  if(dim(dataMeta)[1]==1){
+    dataMeta$Indicator <- paste(substr(dataMeta$Country,1,4),dataMeta$Category,sep=" - ")
+  }else{
+  dataMeta$Indicator <- sapply(dataMeta, function(x) paste(substr(dataMeta$Country,1,4),dataMeta$Category,sep=" - "))[,1]
+  }
   
   #theMean = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"mean" )
   #theMax = aggregate(dataFrame$Close,list(d=dataFrame$Indicator),"max" )
