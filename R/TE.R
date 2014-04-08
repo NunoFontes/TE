@@ -1089,10 +1089,12 @@ te.stats = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   d1=d1
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
-    te.stats.analysis(c,country,indicator,d1,opts)
+    #te.stats.analysis(c,country,indicator,d1,opts)
   }else{
-    countriesEligible = te.group.of.countries(country,"Atlantis")
-    te.stats.analysis(c,countriesEligible,indicator,d1,opts)}
+    country = te.group.of.countries(country,"Atlantis")
+    #te.stats.analysis(c,country,indicator,d1,opts)
+  }
+  te.stats.analysis(c,country,indicator,d1,opts)
 }
 
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
