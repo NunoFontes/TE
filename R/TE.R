@@ -52,7 +52,7 @@ options(stringsAsFactors = FALSE)
 #all$region[!is.na(countrycode(all$region,"country.name","iso3c"))] <- countrycode(all$region,"country.name","iso3c")[!is.na(countrycode(all$region,"country.name","iso3c"))]
 countrycode_data=countrycode_data;
 
-GROUPS_OF_COUNTRIES = c('Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
+GROUPS_OF_COUNTRIES = c('World','Africa','America','Asia','Australia','BRIC','Central and Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
 
 comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confidence","Current Account","Exports","Imports","Consumer Price Index (CPI)","Consumer Spending","Core Consumer Prices","Currency","Exchange Rate","External Debt","Foreign Bond Investment","Foreign Direct Investment","Harmonised Consumer Prices","Household Spending","Housing Index","Stock Market")
 #d=te.countries(c,"G200")
@@ -1085,6 +1085,14 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     arrange_ggplot2(plotsList[[1]],plotsList[[2]],plotsList[[3]],plotsList[[4]],ncol=ncols)
   }
 }
+te.stats = function(c,country,indicator,d1="1950",opts=NULL){
+  
+  if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+    te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL)
+  }else{te.stats.analysis = function(7,'Portugal','GDP',d1="1950",opts=NULL)}
+    #te.group.of.countries(tempSubjects[t],"Atlantis")
+}
+
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   
