@@ -1102,7 +1102,7 @@ te.stats = function(c,country,indicator,d1="1950",opts=NULL){
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     #te.stats.analysis(c,country,indicator,d1,opts)
   }else{
-    country = te.group.of.countries(country,"Atlantis")
+    country = te.group.of.countries(country,"Atlantis",10)
     #te.stats.analysis(c,country,indicator,d1,opts)
   }
   te.stats.analysis(c,country,indicator,d1,opts)
@@ -1338,8 +1338,7 @@ te.stats.analysis.object = function(subjects,object){
 
 }
 
-te.group.of.countries = function(with,without=NULL){
-  TOP = 50
+te.group.of.countries = function(with,without=NULL,TOP = 200){
   with=trim(tolower(with))
   without=c(trim(tolower(without)),"euro area")
   
