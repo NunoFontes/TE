@@ -1086,6 +1086,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
 }
 
 te.stats = function(c,country,indicator,d1="1950",opts=NULL){
+  options(stringsAsFactors = FALSE)
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     te.stats.analysis(c,country,indicator,d1,opts)
   }else{
