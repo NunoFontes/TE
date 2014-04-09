@@ -1120,8 +1120,8 @@ te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
   }
   
   for(i in 1:min(3,length(indicator))){
-  if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
-  }else{
+    if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
+    }else{
     agg = te.stats.analysis.object(countryGiven,indicator[i])
     agg$url = paste("/country-list/",gsub(" ","-",indicator[i]),sep="")
   }
@@ -1138,9 +1138,14 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   dataFrame=te.get.hist.multi.free.new(country,indicator,d1)
   dataMeta=te.get.mat.new(country,indicator)[c("Country","Category","URL")]
   #head(dataFrame)
-  if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
-  if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
-  if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  
+  if(is.null(dataFrame)){return (NULL)}
+  if(length(dataFrame)<2){return (NULL)}
+  if(length(dataFrame$Close)<2){return (NULL)}
+  
+  #if(is.null(dataFrame)){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  #if(length(dataFrame)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
+  #if(length(dataFrame$Close)<2){stop("Return to Sender: No Such Country - Indicator Pair.")}
   
   dataFrame$Country[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))] <- countrycode(dataFrame$Country,"country.name","iso3c")[!is.na(countrycode(dataFrame$Country,"country.name","iso3c"))]
   dataFrame$Country[tolower(dataFrame$Country)=="euro area"] <- "EA17"
@@ -1320,6 +1325,7 @@ te.stats.analysis.object = function(subjects,object){
       }
     }
     thenames = unique(provisionaldf$Indicator)
+    if(is.null(thenames)){return (NULL)}
     provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
     provisionaldf$Indicator = paste(thenames,collapse = " + ")
     provisionaldf$Indicator = paste(provisionaldf$Indicator,object)
