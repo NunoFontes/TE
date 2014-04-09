@@ -759,7 +759,7 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
   
   if(!is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
-    country = te.group.of.countries(country,"Atlantis",10)
+    country = te.group.of.countries(country,"Atlantis",25)
   }
 
   if(length(unique(country))>1 && length(indicator)>1){
@@ -1074,8 +1074,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
   theFunction=get("te.plot.multi")
   plotsList = list()
   howmany = 4
-  
-  
+ 
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     if(length(indicator)>1 && length(country)>1){
       for(i in 1:min(howmany,length(indicator))){
@@ -1131,7 +1130,6 @@ te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
   }
   stats
 }
-
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   #d1="2010"
@@ -1207,7 +1205,6 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
   stats
 }
-
 te.stats.analysis.object = function(subjects,object){
   SINCE = "1999"
   options(stringsAsFactors = FALSE)
@@ -1368,7 +1365,6 @@ te.stats.analysis.object = function(subjects,object){
   stats
 
 }
-
 te.group.of.countries = function(with,without=NULL,TOP = 200){
   with=trim(tolower(with))
   without=c(trim(tolower(without)),"euro area")
@@ -1484,12 +1480,12 @@ te.plot.object = function(subjects,object,d1=2000){
             provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
             provisionaldf$Indicator = paste(thenames,collapse = " + ")
           }else{
-            print("withLogic = te.group.of.countries(tempSubjects[t],Atlantis)")
-            print(tempSubjects[t])
+            #print("withLogic = te.group.of.countries(tempSubjects[t],Atlantis)")
+            #print(tempSubjects[t])
             withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
-            print(withLogic)
+            #print(withLogic)
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
-            print("te.get.hist.multi.free.new(withLogic,object,d1=SINCE)")
+            #print("te.get.hist.multi.free.new(withLogic,object,d1=SINCE)")
             if(length(tempdf$Close)<1) next;
             
             tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
@@ -1512,11 +1508,13 @@ te.plot.object = function(subjects,object,d1=2000){
         }
     }
     thenames = unique(provisionaldf$Indicator)
+    if(!is.null(thenames)){
     provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
     provisionaldf$Indicator = paste(thenames,collapse = " + ")
     dataFrame = rbind(dataFrame,provisionaldf)
+    }
   }
-  
+  if(length(dataFrame)==0) return(NULL)
   dataFrame$DateTime <- as.Date(dataFrame$DateTime)
   
   ggplot(dataFrame,aes(x=(DateTime), y=Close, colour=Indicator)) + 
@@ -1533,7 +1531,6 @@ te.plot.object = function(subjects,object,d1=2000){
     ggtitle(object) + 
     theme(plot.title = element_text(face="bold"))
 }
-
 
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
