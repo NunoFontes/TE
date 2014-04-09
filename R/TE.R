@@ -1123,7 +1123,12 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
     if(length(indicator)>1 && length(country)>1){
       for(i in 1:min(howmany,length(indicator))){
-        plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)}
+        plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
+      }
+      if(length(indicator) == 1){
+        countries = te.group.of.countries(country,"Atlantis",6)
+        plotsList[[2]]=theFunction(1,countries,indicator,d1,opts)
+      }
     }else{plotsList[[1]]=theFunction(1,country,indicator,d1,opts)}
   }else{
     #geoMapCountries = te.group.of.countries(country,"Atlantis",300)
