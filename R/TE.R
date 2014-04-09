@@ -691,7 +691,7 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
   sPDF <- joinCountryData2Map(d,joinCode = "ISO3",nameJoinColumn="region")[-which(getMap()$ADMIN=="Antarctica"),]
   
   par(mai=c(0,0,0,0),mar=c(0,0,1,0),oma=c(0,0,0,0),xaxs="i",yaxs="i")
-  colourPalette <- brewer.pal(20,"YlOrRd")
+  colourPalette <- brewer.pal(9,"PuBu")
   mapCountryData(sPDF, 
                  nameColumnToPlot="Value", 
                  addLegend=FALSE,
