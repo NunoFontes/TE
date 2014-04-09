@@ -1130,7 +1130,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     countries = te.group.of.countries(country,"Atlantis",3)
     countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
     for(i in 1:max(1,min(howmany-1,length(indicator)))){
-      plotsList[[1]]=te.plot.object(countries,indicator[1])
+      plotsList[[i]]=te.plot.object(countries,indicator[i])
     }
   }
 
