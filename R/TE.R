@@ -1129,8 +1129,12 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     #plotsList[[1]] = te.geomap(1,geoMapCountries,indicator[1],opts="world")
     countries = te.group.of.countries(country,"Atlantis",3)
     countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
-    for(i in 1:max(1,min(howmany-1,length(indicator)))){
+    for(i in 1:max(1,min(howmany,length(indicator)))){
       plotsList[[i]]=te.plot.object(countries,indicator[i])
+    }
+    if(length(indicator) == 1){
+      countries = te.group.of.countries(country,"Atlantis",6)
+      plotsList[[2]]=theFunction(1,countries,indicator,d1,opts)
     }
   }
 
@@ -1577,45 +1581,6 @@ te.plot.object = function(subjects,object,d1=2000){
     ggtitle(object) + 
     theme(plot.title = element_text(face="bold"))
 }
-
-
-
-
-test.geomap = function(c="w",country="NULL",indicator,d1="",opts=NULL){
-newmap <- getMap(resolution = "coarse") #'low' or even 'coarse' resolution map may be sufficient
-#example data for 2 years 6 months each
-month <- c(1:6,1:6)
-year <- c(rep(2012,6),rep(2013,6))
-lon <- c(120:131)
-lat <- c(-35:-24)
-p1 <- data.frame(month=month,year=year,lon=lon,lat=lat)
-months <- unique(p1$month)
-years <- unique(p1$year)
-oldPar <- par(mar=c(2, 0, 0, 2)) #margins top,bottom,left,right
-#use layout to create multiple panels including space at top for a title
-nPanels <- layout( cbind(c(0,1:6),c(0,7:12))
-                   , heights=c(lcm(1),rep(1,6))
-                   , respect=F )
-
-for( yrNum in 1:length(years) ){
-  yr <- years[yrNum]
-  for( moNum in 1:length(months) )  {
-    mo <- months[moNum]
-    cat(yr,mo,"\n")
-    plot(newmap, xlim = c(110, 155), ylim = c(-35, -20), asp = 1)
-    mtext( paste(yr,"month",mo), cex=0.7) #add titile to subplot
-    pMoYr <- p1[ p1$year==yr & p1$month==mo, ]
-    points(pMoYr$lon, pMoYr$lat, col = "red", cex = 3)
-  }
-}
-mtext("rworldmap layout demo",outer=TRUE,line=-2)
-par(oldPar)
-}
-
-
-
-
-
 
 #te.tableOfCharts("te.plot.multi",3,c("Portugal","Spain"),c("Unemployment Rate","Inflation Rate","GDP Growth Rate"),d1="2003")
 
