@@ -643,7 +643,15 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
       ct=te.countries(c,"G200")
     }
   }else{
-    ct=country
+    countries = c()
+    for(c in 1:length(country)){
+      if(is.na(match(tolower(country[c]),tolower(GROUPS_OF_COUNTRIES)))){
+        countries=c(countries,country[c])
+      }else{
+        countries=c(countries,te.group.of.countries(country[c],"Atlantis"))
+      }  
+    }
+    ct=countries
   }
   #d=te.get.hist.multi.free.na(c,ct,indicator,"last")
   d=te.get.mat.new("all",indicator)
@@ -669,7 +677,7 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
                  oceanCol="white",
                  borderCol="grey",
                  missingCountryCol="white",
-                 mapTitle="", #paste(opts,indicator,sep=" - "),
+                 mapTitle=paste(indicator),
                  mapRegion=opts,
                  numCats=30)
   
