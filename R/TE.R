@@ -489,6 +489,18 @@ if(is.null(indicator) || length(indicator)==0)
     theme(plot.title = theTitle)
 }
 te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
+  
+  countries=c()
+  for(c in 1:length(country)){
+    if(is.na(match(tolower(country[c]),tolower(GROUPS_OF_COUNTRIES)))){
+      countries=c(countries,country[c])
+    }else{
+      countries=c(countries,te.group.of.countries(country[c],"Atlantis",12))
+    }  
+  }
+  country=countries
+  
+  
   if(length(country)>70){stop("Too many indicators to show. Please re-do selection.")}
   #d=te.get.hist.multi.free(c,country,indicator,"last")
   d=te.get.mat.new(country,indicator[1])
