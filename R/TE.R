@@ -1064,23 +1064,33 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl3 = te.plot.multi(1,country,indicator[3])
 
 te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
-  theFunction=get(c)
+  #theFunction=get(c)
+  theFunction=get("te.plot.multi")
   plotsList = list()
   howmany = 4
-  if(length(indicator)>1 && length(country)>1){
+  
+  
+  if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+    if(length(indicator)>1 && length(country)>1){
       for(i in 1:min(howmany,length(indicator))){
-        plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)
-      }
-    }else{
-    plotsList[[1]]=theFunction(1,country,indicator,d1,opts)
+        plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)}
+    }else{plotsList[[1]]=theFunction(1,country,indicator,d1,opts)}
+  }else{  
+    countries = te.group.of.countries(country,"Atlantis",3)
+    countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
+    for(i in 1:min(howmany,length(indicator))){
+      plotsList[[i]]=te.plot.object(countries,indicator[i])
+    }
   }
+   
+
   if(length(plotsList)==1){
     if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
-    arrange_ggplot2(plotsList[[1]],ncol=ncols)
+      arrange_ggplot2(plotsList[[1]],ncol=ncols)
   }
   if(length(plotsList)==2){
     if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
-    arrange_ggplot2(plotsList[[1]],plotsList[[2]],ncol=ncols)
+      arrange_ggplot2(plotsList[[1]],plotsList[[2]],ncol=ncols)
   }
   if(length(plotsList)==3){
     if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
@@ -1094,7 +1104,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
 
 te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
-  d1="1950"
+  d1="2000"
   stats=list()
   
   if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
@@ -1371,8 +1381,8 @@ te.group.of.countries = function(with,without=NULL,TOP = 200){
   setdiff(tolower(countriesWith), without)
 }
 
-te.plot.object = function(subjects,object){
-  SINCE = "1999"
+te.plot.object = function(subjects,object,d1=2000){
+  SINCE = "2000"
   options(stringsAsFactors = FALSE)
   #subjects = "United States_#_Europe_-_Germany_#_Europe_"
   subjects = gsub("_", "", subjects)
