@@ -1113,7 +1113,7 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl3 = te.plot.multi(1,country,indicator[3])
 
 te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
-  d1="2010"
+  d1="2008"
   options(stringsAsFactors = FALSE)
   #theFunction=get(c)
   theFunction=get("te.plot.multi")
