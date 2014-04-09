@@ -1092,20 +1092,29 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
   }
 }
 
-te.stats = function(c,country,indicator,d1="1950",opts=NULL){
+te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   d1="1950"
-  if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+  stats=list()
+  
+  if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
     agg = NULL
-    #te.stats.analysis(c,country,indicator,d1,opts)
+    country = countryGiven
   }else{
-    agg = te.stats.analysis.object(country,indicator)
-    agg$url = paste("/country-list/",gsub(" ","-",indicator),sep="")
-    country = te.group.of.countries(country,"Atlantis",10)
-    #te.stats.analysis(c,country,indicator,d1,opts)
+    country = te.group.of.countries(countryGiven,"Atlantis",round(10/min(3,length(indicator))))
   }
-  individual = te.stats.analysis(c,country,indicator,d1,opts)
-  rbind(agg,individual)
+  
+  for(i in 1:min(3,length(indicator))){
+  if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
+  }else{
+    agg = te.stats.analysis.object(countryGiven,indicator[i])
+    agg$url = paste("/country-list/",gsub(" ","-",indicator[i]),sep="")
+  }
+  individual = te.stats.analysis(c,country,indicator[i],d1,opts)
+  temp = rbind(agg,individual)
+  stats=rbind(stats,temp)
+  }
+  stats
 }
 
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
@@ -1298,6 +1307,7 @@ te.stats.analysis.object = function(subjects,object){
     thenames = unique(provisionaldf$Indicator)
     provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
     provisionaldf$Indicator = paste(thenames,collapse = " + ")
+    provisionaldf$Indicator = paste(provisionaldf$Indicator,object)
     dataFrame = rbind(dataFrame,provisionaldf)
   } 
   
