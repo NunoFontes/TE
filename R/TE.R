@@ -512,11 +512,20 @@ te.plot.compare.scale=function(c,country,indicator,d1=NULL,opts=NULL){
   #+ ggtitle(titl)
 }
 te.plot.compare=function(c,country,indicator,d1="NULL",opts=NULL){
-  #df=data.frame()
   #assign("df",historicalToMatrix(c,country,indicator), envir = environment())
+  df=data.frame()
+  
+  countries=c()
+  for(c in 1:length(country)){
+    if(is.na(match(tolower(country[c]),tolower(GROUPS_OF_COUNTRIES)))){
+      countries=c(countries,country[c])
+    }else{
+      countries=c(countries,te.group.of.countries(country[c],"Atlantis",12))
+    }  
+  }
+  country=countries
   if(length(country)==1) country = c(country,"United States","United Kingdom","Germany","India")
   if(length(indicator)==1) indicator = c(indicator,"Population")
-  df=data.frame()
   assign("df",historicalToMatrix.new(c,country,indicator), envir = environment())
   
   if(is.null(df)){stop("Return to Sender: No Such Country - Indicator Pair.")}
@@ -524,6 +533,7 @@ te.plot.compare=function(c,country,indicator,d1="NULL",opts=NULL){
   df$Country[!is.na(countrycode(df$Country,"country.name","iso3c"))] <- countrycode(df$Country,"country.name","iso3c")[!is.na(countrycode(df$Country,"country.name","iso3c"))]
   df$Country[tolower(df$Country)=="euro area"] <- "EA17"
   titl=paste(indicator[1], indicator[2],sep=" ~ ")
+  
   ggplot(df, aes(get(names(df)[1]), get(names(df)[2])),environment=environment()) + 
     geom_point(shape=22,fill="black") +
     # geom_point(aes(colour = get(names(df)[3]))) +
@@ -677,7 +687,7 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
                  oceanCol="white",
                  borderCol="grey",
                  missingCountryCol="white",
-                 mapTitle=paste(indicator),
+                 mapTitle="",#paste(indicator),
                  mapRegion=opts,
                  numCats=30)
   
