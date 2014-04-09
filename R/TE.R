@@ -1123,7 +1123,7 @@ te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
     if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
     }else{
     agg = te.stats.analysis.object(countryGiven,indicator[i])
-    agg$url = paste("/country-list/",gsub(" ","-",indicator[i]),sep="")
+    if(!is.null(agg)) agg$url = paste("/country-list/",gsub(" ","-",indicator[i]),sep="")
   }
   individual = te.stats.analysis(c,country,indicator[i],d1,opts)
   temp = rbind(agg,individual)
