@@ -756,10 +756,12 @@ te.unit.converter=function(df){
 
 te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-  
   if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
   
-  #df=te.get.hist.multi.free(c,country,indicator,"last")
+  if(!is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+    country = te.group.of.countries(country,"Atlantis",10)
+  }
+
   if(length(unique(country))>1 && length(indicator)>1){
   df=te.get.mat.new(country,indicator[1])}else{df=te.get.mat.new(country,indicator)}
   df <- df[c("Country","Category","DateTime","Value","Unit")]
@@ -781,6 +783,9 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   
   df$Indicator <- df$Country
   if(length(unique(df$Country))==1) df$Indicator <- df$Category
+
+  
+  
   ggplot(data=df, aes(x=factor(1),y=Value, fill=factor(Indicator), weight=Value))+ 
     geom_bar(width=1,stat="identity",colour="black") + 
     coord_polar(theta="y")  + 
@@ -1075,7 +1080,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
       for(i in 1:min(howmany,length(indicator))){
         plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)}
     }else{plotsList[[1]]=theFunction(1,country,indicator,d1,opts)}
-  }else{  
+  }else{
     countries = te.group.of.countries(country,"Atlantis",3)
     countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
     for(i in 1:min(howmany,length(indicator))){
