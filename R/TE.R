@@ -629,21 +629,25 @@ c("GDP Annual Growth Rate",
 trim=function (x) gsub("^\\s+|\\s+$", "", x)
 Split=function(x) {sapply(strsplit(x," "), paste, collapse=".")}
 te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
-  if(is.null(opts)){opts="World"}
-  if(opts=="World"){
-    ct=te.countries(c,"G200")
-  }else if(opts=="Africa"){
-    ct=te.countries(c,"Africa200")
-  }else if(opts=="Europe"){
-    ct=te.countries(c,"Europe200")
-  }else if(opts=="Asia"){
-    ct=te.countries(c,"Asia200")
+  if(is.null(country)){
+    if(is.null(opts)){opts="World"}
+    if(opts=="World"){
+      ct=te.countries(c,"G200")
+    }else if(opts=="Africa"){
+      ct=te.countries(c,"Africa200")
+    }else if(opts=="Europe"){
+      ct=te.countries(c,"Europe200")
+    }else if(opts=="Asia"){
+      ct=te.countries(c,"Asia200")
+    }else{
+      ct=te.countries(c,"G200")
+    }
   }else{
-    ct=te.countries(c,"G200")
+    ct=country
   }
   #d=te.get.hist.multi.free.na(c,ct,indicator,"last")
   d=te.get.mat.new("all",indicator)
-  d=d[d$Country %in% ct,]
+  d=d[tolower(d$Country) %in% tolower(ct),]
   
   d$region[!is.na(countrycode(d$Country,"country.name","iso3c"))] <- countrycode(d$Country,"country.name","iso3c")[!is.na(countrycode(d$Country,"country.name","iso3c"))]
   d[is.na(countrycode(d$Country,"country.name","iso3c")),]$region <- substr(d[is.na(countrycode(d$Country,"country.name","iso3c")),]$Country,1,3)
@@ -662,9 +666,9 @@ te.geomap=function(c,country="NULL",indicator,d1="",opts=NULL){
                  nameColumnToPlot="Value", 
                  addLegend=FALSE,
                  colourPalette=colourPalette,
-                 oceanCol="lightblue",
-                 borderCol="black",
-                 missingCountryCol="grey",
+                 oceanCol="white",
+                 borderCol="grey",
+                 missingCountryCol="white",
                  mapTitle="", #paste(opts,indicator,sep=" - "),
                  mapRegion=opts,
                  numCats=30)
@@ -759,7 +763,7 @@ te.pie.chart=function(c,country,indicator,d1="NULL",opts=NULL){
   if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
   
   if(!is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
-    country = te.group.of.countries(country,"Atlantis",25)
+    country = te.group.of.countries(country,"Atlantis",15)
   }
 
   if(length(unique(country))>1 && length(indicator)>1){
@@ -1081,10 +1085,12 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
         plotsList[[i]]=theFunction(1,country,indicator[i],d1,opts)}
     }else{plotsList[[1]]=theFunction(1,country,indicator,d1,opts)}
   }else{
+    #geoMapCountries = te.group.of.countries(country,"Atlantis",300)
+    #plotsList[[1]] = te.geomap(1,geoMapCountries,indicator[1],opts="world")
     countries = te.group.of.countries(country,"Atlantis",3)
     countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
-    for(i in 1:min(howmany,length(indicator))){
-      plotsList[[i]]=te.plot.object(countries,indicator[i])
+    for(i in 1:max(1,min(howmany-1,length(indicator)))){
+      plotsList[[1]]=te.plot.object(countries,indicator[1])
     }
   }
 
