@@ -52,7 +52,7 @@ options(stringsAsFactors = FALSE)
 #all$region[!is.na(countrycode(all$region,"country.name","iso3c"))] <- countrycode(all$region,"country.name","iso3c")[!is.na(countrycode(all$region,"country.name","iso3c"))]
 countrycode_data=countrycode_data;
 
-GROUPS_OF_COUNTRIES = c('World','Africa','America','Asia','Australia','BRIC','BRICS','Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','South Africa','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
+GROUPS_OF_COUNTRIES = c('World','Africa','America','Asia','Oceania','BRIC','BRICS','Eastern Europe','Central Asia','Central Europe','East Africa','EMEA','Europe','Latin America','Major','Middle East','North Africa','North America','OPEC','Scandinavia','Southeast Asia','South America','West Africa','Bigger','Top','Smaller','Biggest','Highest','Lowest','Lower','Most','Least','G4','G5','G6','G7','G8','G9','G10','G11','G12','G13','G14','G15','G16','G17','G18','G19','G20')
 
 comparisonproblems=c("Balance of Trade","Business Confidence","Consumer Confidence","Current Account","Exports","Imports","Consumer Price Index (CPI)","Consumer Spending","Core Consumer Prices","Currency","Exchange Rate","External Debt","Foreign Bond Investment","Foreign Direct Investment","Harmonised Consumer Prices","Household Spending","Housing Index","Stock Market")
 #d=te.countries(c,"G200")
@@ -1069,6 +1069,7 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl3 = te.plot.multi(1,country,indicator[3])
 
 te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
+  options(stringsAsFactors = FALSE)
   #theFunction=get(c)
   theFunction=get("te.plot.multi")
   plotsList = list()
@@ -1087,7 +1088,6 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
       plotsList[[i]]=te.plot.object(countries,indicator[i])
     }
   }
-   
 
   if(length(plotsList)==1){
     if(!is.null(opts) && opts$align=='horizontal'){ncols=length(plotsList)}else{ncols=1}
@@ -1398,7 +1398,6 @@ te.plot.object = function(subjects,object,d1=2000){
   #subjects = "United States_#_Europe_-_Germany_#_Europe_"
   subjects = gsub("_", "", subjects)
   subjects = strsplit(subjects,"\\#")[[1]]
-  
   howManyLines = length(subjects)
   dataFrame = list()
 
@@ -1461,6 +1460,7 @@ te.plot.object = function(subjects,object,d1=2000){
           }
         }else{
           if(is.na(match(tolower(tempSubjects[t]),tolower(GROUPS_OF_COUNTRIES)))){
+            #print("is.na(match(tolower(tempSubjects[t]),tolower(GROUPS_OF_COUNTRIES)))")
             tempdf=te.get.hist.multi.free.new(tempSubjects[t],object,d1=SINCE)
             if(length(tempdf$Close)<1) next;
             tempdf$Indicator[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))] = countrycode(tempdf$Country,"country.name","iso3c")[!is.na(countrycode(tempdf$Country,"country.name","iso3c"))]
@@ -1484,15 +1484,18 @@ te.plot.object = function(subjects,object,d1=2000){
             provisionaldf = aggregate(Close ~ DateTime, data = provisionaldf, theAction)
             provisionaldf$Indicator = paste(thenames,collapse = " + ")
           }else{
+            print("withLogic = te.group.of.countries(tempSubjects[t],Atlantis)")
+            print(tempSubjects[t])
             withLogic = te.group.of.countries(tempSubjects[t],"Atlantis")
+            print(withLogic)
             tempdf=te.get.hist.multi.free.new(withLogic,object,d1=SINCE)
+            print("te.get.hist.multi.free.new(withLogic,object,d1=SINCE)")
             if(length(tempdf$Close)<1) next;
             
             tempdf$Indicator = paste("(",tempSubjects[t],")", sep = "")
             tempIndicator = tempdf$Indicator[1]
             tempdf$DateTime <- as.yearmon(tempdf$DateTime)
             tempdf = aggregate(Close ~ DateTime, data = tempdf, theAction)
-            
             
             tempdf = zoo(tempdf$Close,tempdf$DateTime)
             tempdf = na.approx(tempdf, xout=as.yearmon(start(tempdf[1])+(0:(500))/12))
