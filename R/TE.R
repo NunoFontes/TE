@@ -164,7 +164,7 @@ te.get.mat.new=function(contArray,indArray){
   if(contArray[1]=="all"){
     country="all"
   }else{
-    country="rAppsOCPU"
+    country="rOCPU"
     for(i in 1:length(contArray)){
       country=paste(country,contArray[i],sep=",")
     }
@@ -172,7 +172,7 @@ te.get.mat.new=function(contArray,indArray){
   if(indArray[1]=="all"){
     indicator="all"
   }else{
-  indicator="rAppsOCPU"
+  indicator="rOCPU"
     for(i in 1:length(indArray)){
       indicator=paste(indicator,indArray[i],sep=",")
     }
@@ -187,8 +187,8 @@ te.get.mat.new=function(contArray,indArray){
       country1=contArray[1]
       country2=contArray[1]
     }else{
-      country1="rAppsOCPU"
-      country2="rAppsOCPU"
+      country1="rOCPU"
+      country2="rOCPU"
       for(i in 1:round(length(contArray)/2)){
         country1=paste(country1,contArray[i],sep=",")
       }
@@ -203,8 +203,8 @@ te.get.mat.new=function(contArray,indArray){
       indicator1=indArray[1]
       indicator2=indArray[1]
     }else{
-      indicator1="rAppsOCPU"
-      indicator2="rAppsOCPU"
+      indicator1="rOCPU"
+      indicator2="rOCPU"
       for(i in 1:round(length(indArray)/2)){
         indicator1=paste(indicator1,indArray[i],sep=",")
       }
@@ -212,10 +212,6 @@ te.get.mat.new=function(contArray,indArray){
         indicator2=paste(indicator2,indArray[i],sep=",")
       }
     }
-    #df1=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]],d1)
-    #df2=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]],d1)
-    #df3=te.get.hist.multi.free.new(strsplit(country1,",")[[1]],strsplit(indicator2,",")[[1]],d1)
-    #df4=te.get.hist.multi.free.new(strsplit(country2,",")[[1]],strsplit(indicator1,",")[[1]],d1)
     
     df1=te.get.mat.new(strsplit(country1,",")[[1]],strsplit(indicator1,",")[[1]])
     df2=te.get.mat.new(strsplit(country2,",")[[1]],strsplit(indicator2,",")[[1]])
@@ -1100,12 +1096,16 @@ te.stats = function(c,country,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
   d1="1950"
   if(is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+    agg = NULL
     #te.stats.analysis(c,country,indicator,d1,opts)
   }else{
+    agg = te.stats.analysis.object(country,indicator)
+    agg$url = paste("/country-list/",gsub(" ","-",indicator),sep="")
     country = te.group.of.countries(country,"Atlantis",10)
     #te.stats.analysis(c,country,indicator,d1,opts)
   }
-  te.stats.analysis(c,country,indicator,d1,opts)
+  individual = te.stats.analysis(c,country,indicator,d1,opts)
+  rbind(agg,individual)
 }
 
 te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
