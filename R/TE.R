@@ -1032,6 +1032,16 @@ panel.cor=function(x, y, digits=2, prefix="", cex.cor){
 }
 te.simplecorrelation.matrix=function(c,country,indicator,d1="NULL",opts=NULL){
   
+  countries=c()
+  for(c in 1:length(country)){
+    if(is.na(match(tolower(country[c]),tolower(GROUPS_OF_COUNTRIES)))){
+      countries=c(countries,country[c])
+    }else{
+      countries=c(countries,te.group.of.countries(country[c],"Atlantis",12))
+    }  
+  }
+  country=countries
+  
   options(stringsAsFactors = FALSE)
   theTitle=""
   if(length(country)==1) theTitle = country
