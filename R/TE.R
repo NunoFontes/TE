@@ -1154,14 +1154,14 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
 
 te.stats = function(c,countryGiven,indicator,d1="1950",opts=NULL){
   options(stringsAsFactors = FALSE)
-  d1="2000"
+  d1="2008"
   stats=list()
   
   if(is.na(match(tolower(countryGiven),tolower(GROUPS_OF_COUNTRIES)))){
     agg = NULL
     country = countryGiven
   }else{
-    country = te.group.of.countries(countryGiven,"Atlantis",round(10/min(3,length(indicator))))
+    country = te.group.of.countries(countryGiven,"Atlantis",10)
   }
   
   for(i in 1:min(3,length(indicator))){
@@ -1251,8 +1251,8 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
   stats
 }
-te.stats.analysis.object = function(subjects,object){
-  SINCE = "1999"
+te.stats.analysis.object = function(subjects,object,d1="1950"){
+  SINCE = d1
   options(stringsAsFactors = FALSE)
   #subjects = "United States_#_Europe_-_Germany_#_Europe_"
   subjects = gsub("_", "", subjects)
