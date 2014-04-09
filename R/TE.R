@@ -1445,7 +1445,7 @@ te.group.of.countries = function(with,without=NULL,TOP = 200){
 }
 
 te.plot.object = function(subjects,object,d1=2000){
-  SINCE = "2000"
+  SINCE = d1
   options(stringsAsFactors = FALSE)
   #subjects = "United States_#_Europe_-_Germany_#_Europe_"
   subjects = gsub("_", "", subjects)
