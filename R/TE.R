@@ -383,7 +383,7 @@ te.plot=function(c,country,indicator,d1="2005-01-01",opts=NULL){
   #+ geom_hline(yintercept  = mean(dataFrame$Value))
 }
 #reqArray=c("Portugal:Unemployment Rate","Greece:Unemployment Rate","Spain:Unemployment Rate")
-te.plot.multi=function(c,country,indicator=NULL,d1="2005-01-01",opts=NULL){
+te.plot.multi=function(c,country,indicator=NULL,d1="2005",opts=NULL){
 #stop(paste("fy",typeof(indicator),length(indicator),sep="-"))
 if(!is.null(opts$title) && opts$title){theTitle=element_text(face="bold")}else{theTitle=element_blank()}
 if(is.null(opts$legend)){position="none"}else{position=opts$legend}
@@ -1136,7 +1136,7 @@ te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
     countries = te.group.of.countries(country,"Atlantis",3)
     countries=paste(country,paste(countries,collapse="_#_"),sep="_#_")
     for(i in 1:max(1,min(howmany,length(indicator)))){
-      plotsList[[i]]=te.plot.object(countries,indicator[i])
+      plotsList[[i]]=te.plot.object(countries,indicator[i],d1)
     }
     if(length(indicator) == 1){
       countries = te.group.of.countries(country,"Atlantis",6)
