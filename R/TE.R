@@ -738,7 +738,11 @@ te.heat.map=function(c,country,indicator,d1="NULL",opts=NULL){
 }
 te.tree.map=function(c,country,indicator,d1="NULL",opts=NULL){
   options(stringsAsFactors = FALSE)
-
+  
+  if(!is.na(match(tolower(country),tolower(GROUPS_OF_COUNTRIES)))){
+    country = te.group.of.countries(country,"Atlantis",15)
+  }
+  
   #df=te.get.hist.multi.free(c,country,indicator,"last")
   df=te.get.mat.new(country,indicator)
   df <- df[c("Country","Category","DateTime","Value")]
