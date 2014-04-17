@@ -1117,7 +1117,7 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 #pl3 = te.plot.multi(1,country,indicator[3])
 
 te.tableOfCharts = function(c,country,indicator,d1="2005",opts=NULL){
-  d1="2008"
+  d1="1998"
   options(stringsAsFactors = FALSE)
   #theFunction=get(c)
   theFunction=get("te.plot.multi")
@@ -1265,6 +1265,7 @@ te.stats.analysis = function(c,country,indicator,d1="1950",opts=NULL){
   names(stats) <- c("latest","indicator","avg","high","low","high_d","low_d","trend","url")
   stats
 }
+
 te.stats.analysis.object = function(subjects,object,d1="1950"){
   SINCE = d1
   options(stringsAsFactors = FALSE)
